@@ -64,6 +64,7 @@ def run_seed():
     print("Создано 12 покупателей.")
 
     # 5. СОТРУДНИКИ И ИХ КОНТАКТЫ (Для отображения на странице "Контакты")
+# 5. СОТРУДНИКИ И ИХ КОНТАКТЫ (С ПРИВЯЗКОЙ ФОТО)
     positions = ["Менеджер", "Продавец", "Директор"]
     for i in range(3):
         emp_username = f"employee{i}"
@@ -75,22 +76,26 @@ def run_seed():
             emp_user.last_name = f"Сотрудник_{i+1}"
             emp_user.save()
             
-            # Создаем связанную карточку контакта для страницы /contacts/
             Contact.objects.get_or_create(
                 employee=emp_user,
                 defaults={
                     'position': positions[i],
                     'phone': f'+375 (29) 111-22-3{i}',
-                    'email': f'emp{i}@company.com'
+                    'email': f'emp{i}@company.com',
+                    # Точный путь к фото из вашего скриншота!
+                    'photo': 'contacts/-9.jpg' 
                 }
             )
     print("Создано 3 сотрудника и их контактные карточки.")
 
     # 6. ИНФОРМАЦИЯ О КОМПАНИИ (О нас)
+# 6. ИНФОРМАЦИЯ О КОМПАНИИ (С ПРИВЯЗКОЙ ЛОГОТИПА)
     if not CompanyInfo.objects.exists():
         CompanyInfo.objects.create(
             about_text="Мы — лучший магазин бытовой химии в стране!",
-            requisites="УНП 123456789, ЗАО 'ХимТорг'"
+            requisites="УНП 123456789, ЗАО 'ХимТорг'",
+            # Точный путь к логотипу из вашего скриншота!
+            logo='company/f9876904d16fa734c312715150f40317.jpg' 
         )
         print("Информация о компании добавлена.")
 
