@@ -13,12 +13,13 @@ import statistics
 from datetime import date
 from decimal import Decimal
 
-# --- Импорты для Matplotlib ---
 import matplotlib
-matplotlib.use('Agg')  # Обязательно для серверов (чтобы не пытался открыть окно на экране)
+matplotlib.use('Agg') 
 import matplotlib.pyplot as plt
 import io
 import base64
+import logging
+logger = logging.getLogger(__name__) 
 
 def get_graph():
     """Вспомогательная функция для конвертации графика в Base64"""
@@ -28,10 +29,9 @@ def get_graph():
     image_png = buffer.getvalue()
     buffer.close()
     graphic = base64.b64encode(image_png).decode('utf-8')
-    plt.close() # Очищаем память
+    plt.close()
     return graphic
 
-# --- 1. Промокоды ---
 def promocode_list_view(request):
     active_promos = PromoCode.objects.filter(is_active=True)
     archive_promos = PromoCode.objects.filter(is_active=False)
@@ -42,6 +42,7 @@ def promocode_list_view(request):
 
 def promocode_create(request):
     if not request.user.is_superuser:
+        logger.warning(f"Несанкционированный доступ к созданию промокода: {request.user}") # ЛОГ
         return HttpResponseNotFound("Доступ запрещен")
     if request.method == "POST":
         p = PromoCode()
@@ -50,11 +51,13 @@ def promocode_create(request):
         p.expiry_date = request.POST.get("expiry_date")
         p.is_active = True
         p.save()
+        logger.info(f"Админ {request.user} создал промокод: {p.code}") # ЛОГ
         return redirect('promocodes')
     return render(request, 'orders/promocode_form.html')
 
 def promocode_edit(request, id):
     if not request.user.is_superuser:
+        logger.warning(f"Несанкционированный доступ к редактированию промокода: {request.user}")
         return HttpResponseNotFound("Доступ запрещен")
     p = get_object_or_404(PromoCode, id=id)
     if request.method == "POST":
@@ -63,18 +66,20 @@ def promocode_edit(request, id):
         p.expiry_date = request.POST.get("expiry_date")
         p.is_active = request.POST.get("is_active") == 'on'
         p.save()
+        logger.info(f"Админ {request.user} изменил промокод: {p.code}") # ЛОГ
         return redirect('promocodes')
     return render(request, 'orders/promocode_form.html', {'promo': p})
 
 def promocode_delete(request, id):
     if not request.user.is_superuser:
+        logger.warning(f"Несанкционированный доступ к удалению промокода: {request.user}")
         return HttpResponseNotFound("Доступ запрещен")
     p = get_object_or_404(PromoCode, id=id)
     p.delete()
+    logger.info(f"Админ {request.user} удалил промокод") # ЛОГ
     return redirect('promocodes')
 
 
-# --- 2. Детали заказа ---
 @login_required
 def order_detail_view(request, pk):
     order = get_object_or_404(Order, pk=pk, client=request.user)
@@ -84,11 +89,13 @@ def cart_view(request):
     return render(request, 'orders/cart.html')
 
 
-# --- 3. Аналитика (Дашборд с Matplotlib) ---
 @login_required
 def admin_dashboard(request):
     if not request.user.is_superuser:
+        logger.warning(f"Попытка доступа в дашборд без прав: {request.user}") # ЛОГ
         return HttpResponseNotFound("Доступ только для админа")
+    
+    logger.info(f"Администратор {request.user.username} открыл страницу аналитики") # ЛОГ
 
     context = {}
 
@@ -197,11 +204,7 @@ def admin_dashboard(request):
         forecast   = round(float(k * len(sales_data) + b), 2)
     context['forecast'] = max(forecast, 0)
 
-    # =================================================================
-    # СОЗДАНИЕ ГРАФИКОВ MATPLOTLIB
-    # =================================================================
 
-    # 1. График: Продажи по месяцам и тренд
     plt.figure(figsize=(8, 4))
     if months_labels:
         plt.plot(months_labels, sales_data, marker='o', color='blue', label='Реальные продажи')
@@ -212,7 +215,6 @@ def admin_dashboard(request):
         plt.text(0.5, 0.5, 'Нет данных', ha='center')
     context['chart_sales'] = get_graph()
 
-    # 2. Круговая диаграмма: Выручка по категориям
     plt.figure(figsize=(6, 6))
     cat_labels = [c.name for c in profitable_cats]
     cat_revenue = [float(c.revenue) for c in profitable_cats]
@@ -222,7 +224,6 @@ def admin_dashboard(request):
         plt.text(0.5, 0.5, 'Нет данных', ha='center')
     context['chart_categories'] = get_graph()
 
-    # 3. Столбчатая диаграмма: Клиенты по городам
     plt.figure(figsize=(8, 4))
     city_labels = [item['city'] if item['city'] else 'Не указан' for item in clients_by_city]
     city_data = [item['count'] for item in clients_by_city]

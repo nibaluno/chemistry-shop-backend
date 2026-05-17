@@ -10,7 +10,6 @@ urlpatterns = [
     
     path('cart/', views.cart_view, name='cart'),
     
-    # Регулярка для ID заказа
     re_path(r'^order/(?P<pk>[0-9]+)/$', views.order_detail_view, name='order_detail'),
     
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),

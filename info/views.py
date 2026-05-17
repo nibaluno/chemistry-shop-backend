@@ -3,30 +3,28 @@ import zoneinfo
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.utils import timezone 
-
-# ИМПОРТИРУЕМ МОДЕЛИ
 from .models import News, CompanyInfo, GlossaryTerm, Contact, Vacancy, PrivacyPolicy
 from store.models import Review
+import logging 
 
-# ==========================================
-# 1. ГЛАВНАЯ СТРАНИЦА (С календарем и часовым поясом)
-# ==========================================
+
+logger = logging.getLogger(__name__)
+
+
 def home_view(request):
     latest_news = News.objects.order_by('-date_published').first()
     
-    # Получаем время
+
     now_utc = timezone.now()
     
-    # Получаем таймзону (если пользователь вошел - берем его, иначе Минск)
     tz_name = request.user.timezone if request.user.is_authenticated else 'Europe/Minsk'
     
-    # Конвертируем время
+  
     try:
         now_local = now_utc.astimezone(zoneinfo.ZoneInfo(tz_name))
     except:
-        now_local = now_utc # Если часовой пояс не найден, выводим UTC
+        now_local = now_utc 
     
-    # Создаем календарь
     cal = calendar.TextCalendar(firstweekday=0)
     month_cal = cal.formatmonth(now_local.year, now_local.month)
     
@@ -37,9 +35,7 @@ def home_view(request):
         'month_cal': month_cal,
     })
 
-# ==========================================
-# 2. ИНФО-СТРАНИЦЫ (О компании, Контакты, Вакансии, Политика, Отзывы)
-# ==========================================
+
 def about_view(request):
     company = CompanyInfo.objects.first()
     return render(request, 'info/about.html', {'company': company})
@@ -49,7 +45,6 @@ def contacts_view(request):
     return render(request, 'info/contacts.html', {'contacts': contacts})
 
 def vacancies_view(request):
-    # Берем только активные вакансии
     vacancies = Vacancy.objects.filter(is_active=True)
     return render(request, 'info/vacancies.html', {'vacancies': vacancies})
 
@@ -61,30 +56,22 @@ def reviews_view(request):
     reviews = Review.objects.all()
     return render(request, 'info/reviews.html', {'reviews': reviews})
 
-# ==========================================
-# 3. НОВОСТИ (Список и детальная страница с регуляркой)
-# ==========================================
+
 def news_list_view(request):
     news_list = News.objects.all()
     return render(request, 'info/news_list.html', {'news_list': news_list})
 
 def news_detail_view(request, year, slug):
-    # Вытаскиваем новость по слагу и году (как требует регулярка в URL)
     news_item = get_object_or_404(News, slug=slug, date_published__year=year)
     
-    # ИСПРАВЛЕНО: передаем в HTML под правильным именем 'news_item'
     return render(request, 'info/news_detail.html', {'news_item': news_item})
 
-# ==========================================
-# 4. СЛОВАРЬ ТЕРМИНОВ (ИДЕАЛЬНЫЙ РУЧНОЙ CRUD)
-# ==========================================
 
-# 1. Чтение и вывод (Read)
+
 def glossary_index(request):
     terms = GlossaryTerm.objects.all()
     return render(request, "info/glossary.html", {"terms": terms})
 
-# 2. Создание (Create)
 def glossary_create(request):
     if request.method == "POST":
         term_obj = GlossaryTerm()
@@ -92,9 +79,9 @@ def glossary_create(request):
         term_obj.term = request.POST.get("term")
         term_obj.definition = request.POST.get("definition")
         term_obj.save()
+        logger.info(f"Создан новый термин: {term_obj.term}") # ЛОГ
     return HttpResponseRedirect("/glossary/")
 
-# 3. Редактирование (Update)
 def glossary_edit(request, id):
     try:
         term_obj = GlossaryTerm.objects.get(id=id)
@@ -102,17 +89,20 @@ def glossary_edit(request, id):
             term_obj.term = request.POST.get("term")
             term_obj.definition = request.POST.get("definition")
             term_obj.save()
+            logger.info(f"Отредактирован термин: {term_obj.term}")
             return HttpResponseRedirect("/glossary/")
         else:
             return render(request, "info/glossary_edit.html", {"term_obj": term_obj})
     except GlossaryTerm.DoesNotExist:
+        logger.warning(f"Попытка редактирования несуществующего термина с id={id}")
         return HttpResponseNotFound("<h2>Термин не найден</h2>")
      
-# 4. Удаление (Delete)
 def glossary_delete(request, id):
     try:
         term_obj = GlossaryTerm.objects.get(id=id)
         term_obj.delete()
+        logger.info(f"Удален термин с id={id}")
         return HttpResponseRedirect("/glossary/")
     except GlossaryTerm.DoesNotExist:
+        logger.warning(f"Попытка удаления несуществующего термина с id={id}")
         return HttpResponseNotFound("<h2>Термин не найден</h2>")

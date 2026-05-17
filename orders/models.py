@@ -32,7 +32,6 @@ class Order(models.Model):
     promo_code = models.ForeignKey(PromoCode, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Промокод")
 
 
-# Один заказ может содержать много товаров, и один товар может присутствовать во многих заказах
     products = models.ManyToManyField(Product, through='OrderItem', verbose_name="Товары")
 
     class Meta:
@@ -49,7 +48,6 @@ class OrderItem(models.Model):
     price_at_purchase = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена на момент покупки")
 
     def save(self, *args, **kwargs):
-        # Автоматически фиксируем цену товара при сохранении позиции заказа
         if not self.price_at_purchase:
             self.price_at_purchase = self.product.price
         super().save(*args, **kwargs)

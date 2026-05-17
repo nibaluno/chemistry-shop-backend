@@ -1401,3 +1401,23 @@ Not Found: /favicon.ico
 Watching for file changes with StatReloader
 "GET / HTTP/1.1" 200 2048
 "GET /orders/dashboard/ HTTP/1.1" 200 75667
+Not Found: /orders/dashboard/
+Not Found: /orders/dashboard/
+Forbidden: /users/clients/
+Not Found: /orders/dashboard/
+Forbidden: /users/clients/
+Not Found: /orders/dashboard/
+Forbidden: /users/clients/
+Not Found: /orders/dashboard/
+Forbidden: /users/clients/
+INFO 2026-05-14 11:55:25,888 autoreload Watching for file changes with StatReloader
+WARNING 2026-05-14 11:55:39,136 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2026-05-14 11:55:39,139 log Not Found: /favicon.ico
+WARNING 2026-05-14 11:55:39,141 log Not Found: /apple-touch-icon.png
+INFO 2026-05-17 20:47:50,360 autoreload Watching for file changes with StatReloader
+WARNING 2026-05-17 20:51:05,253 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2026-05-17 20:51:05,255 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2026-05-17 20:51:05,258 log Not Found: /favicon.ico
+WARNING 2026-05-17 20:51:05,257 log Not Found: /apple-touch-icon.png
+WARNING 2026-05-17 20:51:05,304 log Not Found: /apple-touch-icon.png
+WARNING 2026-05-17 20:51:05,347 log Not Found: /favicon.ico

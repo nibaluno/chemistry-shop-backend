@@ -8,8 +8,7 @@ class CompanyHistoryInline(admin.TabularInline):
 @admin.register(CompanyInfo)
 class CompanyInfoAdmin(admin.ModelAdmin):
     inlines = [CompanyHistoryInline]
-    # prepopulated_fields = {'slug': ('title',)}
-    # list_display = ('title', 'date_published')
+
 
 admin.site.register(News)
 admin.site.register(Vacancy)

@@ -6,41 +6,46 @@ from django.http import HttpResponseForbidden
 from .models import CustomUser
 from .forms import CustomUserCreationForm
 from services.api_services import get_cat_fact, get_random_joke
+import logging 
 
-# 1. Регистрация (Create)
+logger = logging.getLogger(__name__) 
+
 def register_view(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
+            logger.info(f"Зарегистрирован новый пользователь") 
             return redirect('login')
+        else:
+            logger.warning(f"Ошибка регистрации: {form.errors}") 
     else:
         form = CustomUserCreationForm()
     return render(request, 'users/register.html', {'form': form})
 
-# 2. Вход (Login)
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            logger.info(f"Пользователь {user.username} успешно вошел в систему.") 
             return redirect('profile')
+        else:
+            logger.warning(f"Неудачная попытка входа: {request.POST.get('username')}") 
     else:
         form = AuthenticationForm()
     return render(request, 'users/login.html', {'form': form})
 
-# 3. Выход (Logout)
 def logout_view(request):
     if request.method == 'POST':
         logout(request)
+        logger.info(f"Пользователь вышел из системы.") 
         return redirect('login')
     return redirect('home')
 
-# 4. Личный кабинет (Read)
 @login_required
 def profile_view(request):
-    # Вызываем API 
     cat_fact = get_cat_fact()
     random_joke = get_random_joke()
     return render(request, 'users/profile.html', {
@@ -48,21 +53,19 @@ def profile_view(request):
         'random_joke': random_joke
     })
 
-# 5. Список клиентов для сотрудников (Read)
 @login_required
 def client_list_view(request):
-    # Ручная проверка роли вместо миксина
     if request.user.role != 'employee' and not request.user.is_superuser:
+        logger.warning(f"Несанкционированный доступ к списку клиентов: {request.user}") 
         return HttpResponseForbidden("Доступ запрещен. Только для сотрудников.")
     
     clients = CustomUser.objects.filter(role='buyer')
     return render(request, 'users/client_list.html', {'clients': clients})
 
-# 6. Детальная информация о клиенте (Read)
 @login_required
 def client_detail_view(request, pk):
-    # Ручная проверка роли
     if request.user.role != 'employee' and not request.user.is_superuser:
+        logger.warning(f"Несанкционированный доступ к деталям клиента: {request.user}")
         return HttpResponseForbidden("Доступ запрещен. Только для сотрудников.")
     
     client_user = get_object_or_404(CustomUser, pk=pk)

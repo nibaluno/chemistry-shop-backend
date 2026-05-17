@@ -125,33 +125,41 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Указываем, что наша главная модель юзера теперь лежит в приложении users
 AUTH_USER_MODEL = 'users.CustomUser'
 
-# Указываем папку для сохранения аватарок (медиа-файлы)
 import os
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# --- НАСТРОЙКИ АВТОРИЗАЦИИ ---
-LOGIN_URL = 'login'               # Куда перекидывать неавторизованных (название url)
-LOGIN_REDIRECT_URL = 'profile'    # Куда перекидывать после успешного логина
-LOGOUT_REDIRECT_URL = 'login'     # Куда перекидывать после выхода
+LOGIN_URL = 'login'               
+LOGIN_REDIRECT_URL = 'profile'   
+LOGOUT_REDIRECT_URL = 'login'    
+
+import os
+
+LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO') 
 
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
         'file': {
-            'level': 'INFO',
+            'level': LOG_LEVEL, 
             'class': 'logging.FileHandler',
             'filename': 'debug.log',
+            'formatter': 'verbose',
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
         },
     },
     'loggers': {
-        'django': {
+        '': { 
             'handlers': ['file'],
-            'level': 'INFO',
+            'level': LOG_LEVEL, 
             'propagate': True,
         },
     },
