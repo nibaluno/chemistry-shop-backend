@@ -10,17 +10,29 @@ django.setup()
 from users.models import CustomUser
 from store.models import Category, Manufacturer, Product
 from orders.models import Order, OrderItem
-from info.models import News, Vacancy
+from info.models import News, Vacancy, Contact, CompanyInfo
 
 def run_seed():
     print("Начинаем наполнение базы данных...")
 
-    # Используем get_or_create (если есть - берет, если нет - создает)
+    # 1. СОЗДАНИЕ СУПЕРПОЛЬЗОВАТЕЛЯ
+    if not CustomUser.objects.filter(username='kate').exists():
+        CustomUser.objects.create_superuser(
+            username='kate', 
+            password='123', 
+            email='kate@admin.com',
+            role='employee'
+        )
+        print("Суперпользователь 'kate' создан.")
+    else:
+        print("Суперпользователь 'kate' уже существует.")
+
+    # 2. КАТЕГОРИИ И ПРОИЗВОДИТЕЛИ (Используем get_or_create)
     cat1, _ = Category.objects.get_or_create(slug="poroshki", defaults={'name': "Порошки"})
     cat2, _ = Category.objects.get_or_create(slug="geli", defaults={'name': "Гели"})
     man, _ = Manufacturer.objects.get_or_create(name="Henkel", defaults={'country': "Германия"})
 
-    # Товары создаем только если их нет (для простоты)
+    # 3. ТОВАРЫ (Создаем 15 штук)
     if Product.objects.count() == 0:
         products = []
         for i in range(15):
@@ -37,7 +49,7 @@ def run_seed():
     else:
         products = list(Product.objects.all())
 
-    # Клиенты - создаем через get_or_create по username
+    # 4. ПОКУПАТЕЛИ (12 штук)
     cities = ["Минск", "Брест", "Гродно", "Витебск", "Гомель", "Могилев"]
     for i in range(12):
         username = f"buyer{i}"
@@ -46,38 +58,80 @@ def run_seed():
             user.set_password('123')
             user.role = 'buyer'
             user.city = cities[i % len(cities)]
+            user.first_name = "Клиент"
+            user.last_name = f"Тестовый_{i+1}"
             user.save()
-    print("Создано 12 клиентов.")
+    print("Создано 12 покупателей.")
 
-    # 4. Создаем 3 новости (для главной страницы)
+    # 5. СОТРУДНИКИ И ИХ КОНТАКТЫ (Для отображения на странице "Контакты")
+    positions = ["Менеджер", "Продавец", "Директор"]
     for i in range(3):
-        News.objects.create(
-            title=f"Новость №{i+1}",
+        emp_username = f"employee{i}"
+        emp_user, created = CustomUser.objects.get_or_create(username=emp_username)
+        if created:
+            emp_user.set_password('123')
+            emp_user.role = 'employee'
+            emp_user.first_name = "Иван"
+            emp_user.last_name = f"Сотрудник_{i+1}"
+            emp_user.save()
+            
+            # Создаем связанную карточку контакта для страницы /contacts/
+            Contact.objects.get_or_create(
+                employee=emp_user,
+                defaults={
+                    'position': positions[i],
+                    'phone': f'+375 (29) 111-22-3{i}',
+                    'email': f'emp{i}@company.com'
+                }
+            )
+    print("Создано 3 сотрудника и их контактные карточки.")
+
+    # 6. ИНФОРМАЦИЯ О КОМПАНИИ (О нас)
+    if not CompanyInfo.objects.exists():
+        CompanyInfo.objects.create(
+            about_text="Мы — лучший магазин бытовой химии в стране!",
+            requisites="УНП 123456789, ЗАО 'ХимТорг'"
+        )
+        print("Информация о компании добавлена.")
+
+    # 7. НОВОСТИ (3 штуки)
+    for i in range(3):
+        News.objects.get_or_create(
             slug=f"novost-{i+1}",
-            short_content="Краткое описание новости для теста.",
-            full_content="Полный текст новости с подробностями."
+            defaults={
+                'title': f"Новость №{i+1}",
+                'short_content': "Краткое описание новости для теста.",
+                'full_content': "Полный текст новости с подробностями."
+            }
         )
     print("Создано 3 новости.")
 
-    # 5. Создаем 3 вакансии
+    # 8. ВАКАНСИИ (3 штуки)
     for i in range(3):
-        Vacancy.objects.create(
+        Vacancy.objects.get_or_create(
             title=f"Вакансия №{i+1}",
-            description="Требуется сотрудник на полный рабочий день."
+            defaults={'description': "Требуется сотрудник на полный рабочий день."}
         )
     print("Создано 3 вакансии.")
 
-    # 6. Создаем заказы за последние 6 месяцев (для графиков)
-    buyer = CustomUser.objects.filter(role='buyer').first()
-    for i in range(6):
-        order_date = timezone.now() - timedelta(days=i * 30)
-        order = Order.objects.create(client=buyer, delivery_date=date.today() + timedelta(days=5))
-        order.created_at = order_date
-        order.save()
-        
-        # Добавляем случайные товары
-        for p in products[:3]:
-            OrderItem.objects.create(order=order, product=p, quantity=1, price_at_purchase=p.price)
+    # 9. ЗАКАЗЫ (Для аналитики - за 6 месяцев)
+    # Проверка, чтобы заказы не дублировались при повторном запуске скрипта
+    if Order.objects.count() == 0:
+        buyer = CustomUser.objects.filter(role='buyer').first()
+        for i in range(6):
+            order_date = timezone.now() - timedelta(days=i * 30)
+            order = Order.objects.create(client=buyer, delivery_date=date.today() + timedelta(days=5))
+            
+            # ВАЖНО: принудительно меняем дату
+            order.created_at = order_date
+            order.save()
+            
+            # Добавляем 3 товара в заказ
+            for p in products[:3]:
+                OrderItem.objects.create(order=order, product=p, quantity=1, price_at_purchase=p.price)
+        print("Заказы за 6 месяцев созданы.")
+    else:
+        print("Заказы уже существуют (пропуск, чтобы избежать дублирования в аналитике).")
     
     print("База наполнена успешно!")
 
