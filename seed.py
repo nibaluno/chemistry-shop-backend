@@ -15,7 +15,6 @@ from info.models import News, Vacancy, Contact, CompanyInfo
 def run_seed():
     print("Начинаем наполнение базы данных...")
 
-    # 1. СОЗДАНИЕ СУПЕРПОЛЬЗОВАТЕЛЯ
     if not CustomUser.objects.filter(username='kate').exists():
         CustomUser.objects.create_superuser(
             username='kate', 
@@ -27,12 +26,11 @@ def run_seed():
     else:
         print("Суперпользователь 'kate' уже существует.")
 
-    # 2. КАТЕГОРИИ И ПРОИЗВОДИТЕЛИ (Используем get_or_create)
     cat1, _ = Category.objects.get_or_create(slug="poroshki", defaults={'name': "Порошки"})
     cat2, _ = Category.objects.get_or_create(slug="geli", defaults={'name': "Гели"})
     man, _ = Manufacturer.objects.get_or_create(name="Henkel", defaults={'country': "Германия"})
 
-    # 3. ТОВАРЫ (Создаем 15 штук)
+   
     if Product.objects.count() == 0:
         products = []
         for i in range(15):
@@ -49,7 +47,7 @@ def run_seed():
     else:
         products = list(Product.objects.all())
 
-    # 4. ПОКУПАТЕЛИ (12 штук)
+
     cities = ["Минск", "Брест", "Гродно", "Витебск", "Гомель", "Могилев"]
     for i in range(12):
         username = f"buyer{i}"
@@ -63,8 +61,7 @@ def run_seed():
             user.save()
     print("Создано 12 покупателей.")
 
-    # 5. СОТРУДНИКИ И ИХ КОНТАКТЫ (Для отображения на странице "Контакты")
-# 5. СОТРУДНИКИ И ИХ КОНТАКТЫ (С ПРИВЯЗКОЙ ФОТО)
+
     positions = ["Менеджер", "Продавец", "Директор"]
     for i in range(3):
         emp_username = f"employee{i}"
@@ -82,24 +79,21 @@ def run_seed():
                     'position': positions[i],
                     'phone': f'+375 (29) 111-22-3{i}',
                     'email': f'emp{i}@company.com',
-                    # Точный путь к фото из вашего скриншота!
                     'photo': 'contacts/-9.jpg' 
                 }
             )
     print("Создано 3 сотрудника и их контактные карточки.")
 
-    # 6. ИНФОРМАЦИЯ О КОМПАНИИ (О нас)
-# 6. ИНФОРМАЦИЯ О КОМПАНИИ (С ПРИВЯЗКОЙ ЛОГОТИПА)
     if not CompanyInfo.objects.exists():
         CompanyInfo.objects.create(
             about_text="Мы — лучший магазин бытовой химии в стране!",
             requisites="УНП 123456789, ЗАО 'ХимТорг'",
-            # Точный путь к логотипу из вашего скриншота!
+           
             logo='company/f9876904d16fa734c312715150f40317.jpg' 
         )
         print("Информация о компании добавлена.")
 
-    # 7. НОВОСТИ (3 штуки)
+
     for i in range(3):
         News.objects.get_or_create(
             slug=f"novost-{i+1}",
@@ -111,7 +105,7 @@ def run_seed():
         )
     print("Создано 3 новости.")
 
-    # 8. ВАКАНСИИ (3 штуки)
+
     for i in range(3):
         Vacancy.objects.get_or_create(
             title=f"Вакансия №{i+1}",
@@ -119,21 +113,27 @@ def run_seed():
         )
     print("Создано 3 вакансии.")
 
-    # 9. ЗАКАЗЫ (Для аналитики - за 6 месяцев)
-    # Проверка, чтобы заказы не дублировались при повторном запуске скрипта
+
     if Order.objects.count() == 0:
         buyer = CustomUser.objects.filter(role='buyer').first()
         for i in range(6):
             order_date = timezone.now() - timedelta(days=i * 30)
             order = Order.objects.create(client=buyer, delivery_date=date.today() + timedelta(days=5))
             
-            # ВАЖНО: принудительно меняем дату
+  
             order.created_at = order_date
             order.save()
             
-            # Добавляем 3 товара в заказ
-            for p in products[:3]:
-                OrderItem.objects.create(order=order, product=p, quantity=1, price_at_purchase=p.price)
+        
+        import random # добавьте импорт в начало
+        for p in products[:3]:
+            random_price = p.price * (0.8 + random.random() * 0.4) 
+            OrderItem.objects.create(
+                order=order, 
+                product=p, 
+                quantity=random.randint(1, 5), # Разное количество
+                price_at_purchase=random_price
+            )
         print("Заказы за 6 месяцев созданы.")
     else:
         print("Заказы уже существуют (пропуск, чтобы избежать дублирования в аналитике).")

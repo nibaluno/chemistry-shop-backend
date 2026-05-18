@@ -1424,3 +1424,29 @@ WARNING 2026-05-17 20:51:05,347 log Not Found: /favicon.ico
 INFO 2026-05-17 20:56:25,833 autoreload Watching for file changes with StatReloader
 INFO 2026-05-17 20:58:25,628 autoreload Watching for file changes with StatReloader
 INFO 2026-05-17 21:08:20,003 autoreload Watching for file changes with StatReloader
+INFO 2026-05-17 22:04:18,941 autoreload Watching for file changes with StatReloader
+INFO 2026-05-17 22:06:25,579 views Пользователь вышел из системы.
+WARNING 2026-05-17 22:06:42,854 views Неудачная попытка входа: buyer0
+INFO 2026-05-17 22:06:54,347 views Пользователь buyer0 успешно вошел в систему.
+INFO 2026-05-17 22:07:19,492 views Пользователь вышел из системы.
+WARNING 2026-05-17 22:07:27,370 views Неудачная попытка входа: buyer2
+WARNING 2026-05-17 22:07:36,017 views Неудачная попытка входа: buyer2
+WARNING 2026-05-17 22:07:42,320 views Неудачная попытка входа: buyer1
+INFO 2026-05-17 22:08:00,387 views Пользователь buyer2 успешно вошел в систему.
+WARNING 2026-05-17 22:08:28,911 log Not Found: /apple-touch-icon.png
+WARNING 2026-05-17 22:08:28,912 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2026-05-17 22:08:28,914 log Not Found: /favicon.ico
+INFO 2026-05-18 00:57:24,180 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 00:57:26,193 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 01:21:04,710 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 01:21:04,904 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 01:21:05,979 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 01:21:06,128 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 12:22:36,331 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 13:40:43,709 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 13:56:53,874 views Пользователь kate успешно вошел в систему.
+INFO 2026-05-18 13:56:57,048 views Администратор kate открыл страницу аналитики
+INFO 2026-05-18 13:56:57,107 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-05-18 13:56:57,108 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-05-18 13:56:57,109 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-05-18 13:56:57,110 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.

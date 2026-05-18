@@ -75,11 +75,10 @@ def glossary_index(request):
 def glossary_create(request):
     if request.method == "POST":
         term_obj = GlossaryTerm()
-        # Достаем данные из POST-запроса вручную!
         term_obj.term = request.POST.get("term")
         term_obj.definition = request.POST.get("definition")
         term_obj.save()
-        logger.info(f"Создан новый термин: {term_obj.term}") # ЛОГ
+        logger.info(f"Создан новый термин: {term_obj.term}") 
     return HttpResponseRedirect("/glossary/")
 
 def glossary_edit(request, id):
