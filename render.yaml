@@ -8,7 +8,7 @@ services:
     name: my-django-app
     runtime: python
   
-    buildCommand: "pip install -r requirements.txt && python manage.py migrate && python seed.py && python manage.py collectstatic --noinput"
+    buildCommand: "pip install -r requirements.txt && python manage.py migrate && python manage.py loaddata data.json && python manage.py collectstatic --noinput"
     startCommand: "gunicorn config.wsgi:application"
     envVars:
       - key: DATABASE_URL
