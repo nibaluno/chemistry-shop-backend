@@ -2,7 +2,7 @@ import os
 import django
 from datetime import date, timedelta
 from django.utils import timezone
-from numpy.random import random
+import random
 
 # Настройка Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
