@@ -1466,3 +1466,61 @@ INFO 2026-05-18 14:35:08,484 category Using categorical units to plot a list of 
 INFO 2026-05-18 14:35:08,485 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
 INFO 2026-05-18 14:35:08,486 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
 INFO 2026-05-18 14:35:08,486 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-05-18 14:43:16,998 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 14:46:07,625 views Администратор kate открыл страницу аналитики
+INFO 2026-05-18 14:46:07,648 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-05-18 14:46:07,649 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-05-18 14:46:07,650 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-05-18 14:46:07,650 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-05-18 14:56:14,785 views Администратор kate открыл страницу аналитики
+INFO 2026-05-18 14:56:14,800 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-05-18 14:56:14,800 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-05-18 14:56:14,801 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-05-18 14:56:14,801 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-05-18 16:14:58,934 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 16:15:03,257 autoreload Watching for file changes with StatReloader
+WARNING 2026-05-18 16:15:19,023 log Not Found: /favicon.ico
+WARNING 2026-05-18 16:15:19,028 log Not Found: /apple-touch-icon.png
+WARNING 2026-05-18 16:15:19,031 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2026-05-18 16:15:19,049 log Not Found: /favicon.ico
+INFO 2026-05-18 16:15:43,860 views Пользователь kate успешно вошел в систему.
+INFO 2026-05-18 18:34:46,962 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/models.py changed, reloading.
+INFO 2026-05-18 18:34:47,243 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 18:37:46,799 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/models.py changed, reloading.
+INFO 2026-05-18 18:37:47,026 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:06:25,090 autoreload /Users/kategorbenko/Sem4/IGI/LR55/store/models.py changed, reloading.
+INFO 2026-05-18 20:06:25,620 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:14:29,135 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 20:14:29,426 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:14:30,742 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 20:14:30,929 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:14:34,203 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 20:14:34,389 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:14:40,692 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 20:14:40,910 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:16:19,567 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 20:16:19,882 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:16:22,191 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 20:16:22,385 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:16:26,506 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 20:16:26,670 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:16:29,754 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 20:16:29,917 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:16:32,166 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 20:16:32,366 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:16:33,600 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 20:16:33,791 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:16:55,691 views Пользователь вышел из системы.
+INFO 2026-05-18 20:17:18,709 views Пользователь kate успешно вошел в систему.
+INFO 2026-05-18 20:19:09,519 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 20:19:09,826 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:19:22,339 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 20:19:22,538 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:19:29,844 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 20:19:30,058 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:19:51,620 autoreload /Users/kategorbenko/Sem4/IGI/LR55/services/api_services.py changed, reloading.
+INFO 2026-05-18 20:19:51,834 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:19:55,134 autoreload /Users/kategorbenko/Sem4/IGI/LR55/services/api_services.py changed, reloading.
+INFO 2026-05-18 20:19:55,342 autoreload Watching for file changes with StatReloader
+INFO 2026-05-18 20:58:07,902 autoreload /Users/kategorbenko/Sem4/IGI/LR55/info/views.py changed, reloading.
+INFO 2026-05-18 20:58:08,218 autoreload Watching for file changes with StatReloader

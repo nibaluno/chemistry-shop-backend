@@ -16,6 +16,7 @@
     <section>
         <h3>Информация о времени</h3>
         <p>Текущая дата: <strong>{{ now_local|date:"d/m/Y" }}</strong></p>
+        <p>Название: <strong>{{ tz_name }}</strong></p>
         <p>Время локальное: <strong>{{ now_local|time:"H:i" }}</strong></p>
         <p>Время UTC: <strong>{{ now_utc|time:"H:i" }}</strong></p>
 

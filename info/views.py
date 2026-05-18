@@ -16,7 +16,6 @@ def home_view(request):
     
 
     now_utc = timezone.now()
-    
     tz_name = request.user.timezone if request.user.is_authenticated else 'Europe/Minsk'
     
   
@@ -25,6 +24,7 @@ def home_view(request):
     except:
         now_local = now_utc 
     
+    #просто календарь
     cal = calendar.TextCalendar(firstweekday=0)
     month_cal = cal.formatmonth(now_local.year, now_local.month)
     
@@ -33,6 +33,7 @@ def home_view(request):
         'now_utc': now_utc,
         'now_local': now_local,
         'month_cal': month_cal,
+        'tz_name' : tz_name
     })
 
 

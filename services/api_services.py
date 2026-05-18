@@ -1,7 +1,7 @@
 import requests
 
 def get_cat_fact():
-    """Получает случайный факт о котах из API (из PDF преподавателя)"""
+    """Получает случайный факт о котах из API """
     try:
         response = requests.get("https://catfact.ninja/fact", timeout=3)
         if response.status_code == 200:
@@ -11,7 +11,7 @@ def get_cat_fact():
     return "Котики сейчас спят, фактов нет."
 
 def get_random_joke():
-    """Получает случайную шутку из API (из PDF преподавателя)"""
+    """Получает случайную шутку из API """
     try:
         response = requests.get("https://official-joke-api.appspot.com/random_joke", timeout=3)
         if response.status_code == 200:

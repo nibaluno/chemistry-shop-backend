@@ -56,7 +56,7 @@ class Product(models.Model):
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews', verbose_name="Товар")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Автор") #Один ко многим
-    #У одного отзыва может быть только один Автор.
+
     text = models.TextField(verbose_name="Текст отзыва")
     rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)], verbose_name="Оценка (1-5)")
     date_added = models.DateTimeField(auto_now_add=True, verbose_name="Дата")
