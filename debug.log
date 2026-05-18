@@ -1450,3 +1450,4 @@ INFO 2026-05-18 13:56:57,107 category Using categorical units to plot a list of 
 INFO 2026-05-18 13:56:57,108 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
 INFO 2026-05-18 13:56:57,109 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
 INFO 2026-05-18 13:56:57,110 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-05-18 14:00:44,483 autoreload Watching for file changes with StatReloader

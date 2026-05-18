@@ -2,6 +2,7 @@ import os
 import django
 from datetime import date, timedelta
 from django.utils import timezone
+from numpy.random import random
 
 # Настройка Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
@@ -114,29 +115,31 @@ def run_seed():
     print("Создано 3 вакансии.")
 
 
+# 8. ЗАКАЗЫ (Для аналитики)
     if Order.objects.count() == 0:
         buyer = CustomUser.objects.filter(role='buyer').first()
         for i in range(6):
             order_date = timezone.now() - timedelta(days=i * 30)
             order = Order.objects.create(client=buyer, delivery_date=date.today() + timedelta(days=5))
-            
-  
             order.created_at = order_date
             order.save()
             
-        
-        import random # добавьте импорт в начало
-        for p in products[:3]:
-            random_price = p.price * (0.8 + random.random() * 0.4) 
-            OrderItem.objects.create(
-                order=order, 
-                product=p, 
-                quantity=random.randint(1, 5), # Разное количество
-                price_at_purchase=random_price
-            )
-        print("Заказы за 6 месяцев созданы.")
-    else:
-        print("Заказы уже существуют (пропуск, чтобы избежать дублирования в аналитике).")
+            # ХИТРОСТЬ ДЛЯ КРАСИВОГО ГРАФИКА:
+            # i=5 (это полгода назад), i=0 (это сейчас).
+            # Сделаем так, чтобы со временем количество покупок росло.
+            base_quantity = 6 - i 
+            
+            for p in products[:3]:
+                # Добавляем случайный разброс от 1 до 4
+                random_qty = base_quantity + random.randint(1, 4) 
+                
+                OrderItem.objects.create(
+                    order=order, 
+                    product=p, 
+                    quantity=random_qty, # Теперь количество разное каждый месяц!
+                    price_at_purchase=p.price
+                )
+        print("Заказы за 6 месяцев созданы (с динамичным трендом роста).")
     
     print("База наполнена успешно!")
 
