@@ -42,7 +42,7 @@ def promocode_list_view(request):
 
 def promocode_create(request):
     if not request.user.is_superuser:
-        logger.warning(f"Несанкционированный доступ к созданию промокода: {request.user}") # ЛОГ
+        logger.warning(f"Несанкционированный доступ к созданию промокода: {request.user}") 
         return HttpResponseNotFound("Доступ запрещен")
     if request.method == "POST":
         p = PromoCode()
@@ -51,7 +51,7 @@ def promocode_create(request):
         p.expiry_date = request.POST.get("expiry_date")
         p.is_active = True
         p.save()
-        logger.info(f"Админ {request.user} создал промокод: {p.code}") # ЛОГ
+        logger.info(f"Админ {request.user} создал промокод: {p.code}")  
         return redirect('promocodes')
     return render(request, 'orders/promocode_form.html')
 
@@ -66,7 +66,7 @@ def promocode_edit(request, id):
         p.expiry_date = request.POST.get("expiry_date")
         p.is_active = request.POST.get("is_active") == 'on'
         p.save()
-        logger.info(f"Админ {request.user} изменил промокод: {p.code}") # ЛОГ
+        logger.info(f"Админ {request.user} изменил промокод: {p.code}") 
         return redirect('promocodes')
     return render(request, 'orders/promocode_form.html', {'promo': p})
 
@@ -76,7 +76,7 @@ def promocode_delete(request, id):
         return HttpResponseNotFound("Доступ запрещен")
     p = get_object_or_404(PromoCode, id=id)
     p.delete()
-    logger.info(f"Админ {request.user} удалил промокод") # ЛОГ
+    logger.info(f"Админ {request.user} удалил промокод") 
     return redirect('promocodes')
 
 
@@ -92,10 +92,10 @@ def cart_view(request):
 @login_required
 def admin_dashboard(request):
     if not request.user.is_superuser:
-        logger.warning(f"Попытка доступа в дашборд без прав: {request.user}") # ЛОГ
+        logger.warning(f"Попытка доступа в дашборд без прав: {request.user}") 
         return HttpResponseNotFound("Доступ только для админа")
     
-    logger.info(f"Администратор {request.user.username} открыл страницу аналитики") # ЛОГ
+    logger.info(f"Администратор {request.user.username} открыл страницу аналитики") 
 
     context = {}
 

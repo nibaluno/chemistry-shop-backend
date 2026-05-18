@@ -12,7 +12,7 @@ class CompanyInfo(models.Model):
         verbose_name_plural = "Информация о компании"
 
 class CompanyHistory(models.Model):
-    company = models.ForeignKey(CompanyInfo, on_delete=models.CASCADE, related_name='history')
+    company = models.ForeignKey(CompanyInfo, on_delete=models.CASCADE, related_name='history') #mto
     year = models.PositiveIntegerField(verbose_name="Год")
     event = models.CharField(max_length=255, verbose_name="Событие")
 
@@ -38,7 +38,7 @@ class Vacancy(models.Model):
         verbose_name_plural = "Вакансии"
 
 class Contact(models.Model):
-    employee = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Сотрудник")
+    employee = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Сотрудник") #oto
     position = models.CharField(max_length=100, verbose_name="Должность")
     photo = models.ImageField(upload_to='contacts/', blank=True, null=True, verbose_name="Фото")
     phone = models.CharField(max_length=20, verbose_name="Телефон")

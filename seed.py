@@ -4,10 +4,8 @@ from datetime import date, timedelta
 from django.utils import timezone
 import random
 
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
-
 
 from users.models import CustomUser
 from store.models import Category, Manufacturer, Product
@@ -17,6 +15,7 @@ from info.models import News, Vacancy, Contact, CompanyInfo
 def run_seed():
     print("Начинаем наполнение базы данных...")
 
+    # 1. Создание суперпользователя
     if not CustomUser.objects.filter(username='kate').exists():
         CustomUser.objects.create_superuser(
             username='kate', 
@@ -28,11 +27,12 @@ def run_seed():
     else:
         print("Суперпользователь 'kate' уже существует.")
 
+    # 2. Категории и производитель
     cat1, _ = Category.objects.get_or_create(slug="poroshki", defaults={'name': "Порошки"})
     cat2, _ = Category.objects.get_or_create(slug="geli", defaults={'name': "Гели"})
     man, _ = Manufacturer.objects.get_or_create(name="Henkel", defaults={'country': "Германия"})
 
-   
+    # 3. Товары (15 штук)
     if Product.objects.count() == 0:
         products = []
         for i in range(15):
@@ -49,7 +49,7 @@ def run_seed():
     else:
         products = list(Product.objects.all())
 
-
+    # 4. Покупатели (12 человек по разным городам)
     cities = ["Минск", "Брест", "Гродно", "Витебск", "Гомель", "Могилев"]
     for i in range(12):
         username = f"buyer{i}"
@@ -60,10 +60,15 @@ def run_seed():
             user.city = cities[i % len(cities)]
             user.first_name = "Клиент"
             user.last_name = f"Тестовый_{i+1}"
+            from datetime import date
+            birth_year = date.today().year - random.randint(18, 65)
+            birth_month = random.randint(1, 12)
+            birth_day = random.randint(1, 28)
+            user.birth_date = date(birth_year, birth_month, birth_day)
             user.save()
     print("Создано 12 покупателей.")
 
-
+    # 5. Сотрудники и контакты
     positions = ["Менеджер", "Продавец", "Директор"]
     for i in range(3):
         emp_username = f"employee{i}"
@@ -81,21 +86,21 @@ def run_seed():
                     'position': positions[i],
                     'phone': f'+375 (29) 111-22-3{i}',
                     'email': f'emp{i}@company.com',
-                    'photo': 'contacts/-9.jpg' 
+                    'photo': 'contacts/-9.jpg'
                 }
             )
     print("Создано 3 сотрудника и их контактные карточки.")
 
+    # 6. Информация о компании
     if not CompanyInfo.objects.exists():
         CompanyInfo.objects.create(
             about_text="Мы — лучший магазин бытовой химии в стране!",
             requisites="УНП 123456789, ЗАО 'ХимТорг'",
-           
-            logo='company/f9876904d16fa734c312715150f40317.jpg' 
+            logo='company/f9876904d16fa734c312715150f40317.jpg'
         )
         print("Информация о компании добавлена.")
 
-
+    # 7. Новости
     for i in range(3):
         News.objects.get_or_create(
             slug=f"novost-{i+1}",
@@ -107,7 +112,7 @@ def run_seed():
         )
     print("Создано 3 новости.")
 
-
+    # 8. Вакансии
     for i in range(3):
         Vacancy.objects.get_or_create(
             title=f"Вакансия №{i+1}",
@@ -115,34 +120,75 @@ def run_seed():
         )
     print("Создано 3 вакансии.")
 
-
-# 8. ЗАКАЗЫ (Для аналитики)
+    # 9. ЗАКАЗЫ (ИСПРАВЛЕНО - теперь для всех товаров)
     if Order.objects.count() == 0:
         buyer = CustomUser.objects.filter(role='buyer').first()
-        for i in range(6):
+        
+        for i in range(6):  # 6 месяцев
             order_date = timezone.now() - timedelta(days=i * 30)
             order = Order.objects.create(client=buyer, delivery_date=date.today() + timedelta(days=5))
             order.created_at = order_date
             order.save()
             
-            # ХИТРОСТЬ ДЛЯ КРАСИВОГО ГРАФИКА:
-            # i=5 (это полгода назад), i=0 (это сейчас).
-            # Сделаем так, чтобы со временем количество покупок росло.
-            base_quantity = 6 - i 
+            # Базовая динамика: старые заказы имеют меньше товаров
+            base_quantity = 6 - i  # от 6 (сейчас) до 1 (полгода назад)
             
-            for p in products[:3]:
-                # Добавляем случайный разброс от 1 до 4
-                random_qty = base_quantity + random.randint(1, 4) 
+            # 🔥 ИСПРАВЛЕНИЕ: теперь проходим по ВСЕМ товарам
+            for p in products:  # Вместо products[:3]
+                # Случайное количество (база + бонус 1-4)
+                random_qty = base_quantity + random.randint(1, 4)
                 
-                OrderItem.objects.create(
-                    order=order, 
-                    product=p, 
-                    quantity=random_qty, # Теперь количество разное каждый месяц!
-                    price_at_purchase=p.price
-                )
-        print("Заказы за 6 месяцев созданы (с динамичным трендом роста).")
+                # НЕКОТОРЫЕ ТОВАРЫ НЕ ПОПАДАЮТ В ЗАКАЗ (имитация реальности)
+                # Например, в старых заказах меньше ассортимент
+                probability = 0.7 + (i * 0.05)  # 70% в старых, 95% в новых
+                
+                if random.random() < probability:
+                    OrderItem.objects.create(
+                        order=order,
+                        product=p,
+                        quantity=random_qty,
+                        price_at_purchase=p.price
+                    )
+        
+        print("Заказы за 6 месяцев созданы (для всех 15 товаров, с растущим трендом).")
+    else:
+        print("Заказы уже существуют, пропускаем создание.")
+
+    # ИТОГОВАЯ СТАТИСТИКА
+    print("\n" + "="*50)
+    print("СТАТИСТИКА ПОСЛЕ ЗАПОЛНЕНИЯ:")
+    print("="*50)
+    print(f"Покупателей: {CustomUser.objects.filter(role='buyer').count()}")
+    print(f"Товаров: {Product.objects.count()}")
+    print(f"Заказов: {Order.objects.count()}")
+    print(f"Позиций в заказах: {OrderItem.objects.count()}")
     
-    print("База наполнена успешно!")
+    # Выручка по товарам
+    total_revenue = 0
+    for p in Product.objects.all():
+        revenue = sum(item.quantity * item.price_at_purchase for item in p.orderitem_set.all())
+        if revenue > 0:
+            total_revenue += revenue
+            print(f"  {p.name}: продано {p.orderitem_set.count()} позиций, выручка {revenue:.2f} руб.")
+    
+    print(f"\n💰 ОБЩАЯ ВЫРУЧКА: {total_revenue:.2f} руб.")
+    
+    # Помесячная выручка для проверки тренда
+    print("\n📈 ПОМЕСЯЧНАЯ ВЫРУЧКА (тренд):")
+    from django.db.models import Sum, F
+    from django.db.models.functions import TruncMonth
+    
+    monthly = (Order.objects
+               .annotate(month=TruncMonth('created_at'))
+               .values('month')
+               .annotate(total=Sum(F('orderitem__quantity') * F('orderitem__price_at_purchase')))
+               .order_by('month'))
+    
+    for m in monthly:
+        if m['month']:
+            print(f"  {m['month'].strftime('%B %Y')}: {m['total']:.2f} руб.")
+    
+    print("\nБаза наполнена успешно!")
 
 if __name__ == '__main__':
     run_seed()

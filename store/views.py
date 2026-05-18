@@ -64,7 +64,7 @@ def product_edit(request, id):
         product.stock = request.POST.get("stock")
         product.unit = request.POST.get("unit")
         product.save()
-        logger.info(f"Товар {product.name} отредактирован админом {request.user}") # ЛОГ
+        logger.info(f"Товар {product.name} отредактирован админом {request.user}") 
         return redirect('product_detail', pk=product.id)
     
     categories = Category.objects.all()
@@ -81,7 +81,7 @@ def product_delete(request, id):
         return HttpResponseNotFound("Доступ запрещен")
     product = get_object_or_404(Product, id=id)
     product.delete()
-    logger.info(f"Товар удален админом {request.user}") # ЛОГ
+    logger.info(f"Товар удален админом {request.user}") 
     return redirect('product_list')
 
 def add_review(request, product_id):
@@ -92,7 +92,7 @@ def add_review(request, product_id):
         r.text = request.POST.get("text")
         r.rating = request.POST.get("rating")
         r.save()
-        logger.info(f"Пользователь {request.user} оставил отзыв к товару") # ЛОГ
+        logger.info(f"Пользователь {request.user} оставил отзыв к товару") 
     return redirect('product_detail', pk=product_id)
 
 

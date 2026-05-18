@@ -25,11 +25,11 @@ class Order(models.Model):
         ('cancelled', 'Отменен'),
     ]
 
-    client = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,  related_name='orders', verbose_name="Клиент")
+    client = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,  related_name='orders', verbose_name="Клиент") #mto
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата заказа")
     delivery_date = models.DateField(verbose_name="Дата доставки")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new', verbose_name="Статус")
-    promo_code = models.ForeignKey(PromoCode, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Промокод")
+    promo_code = models.ForeignKey(PromoCode, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Промокод") #mto
 
 
     products = models.ManyToManyField(Product, through='OrderItem', verbose_name="Товары")

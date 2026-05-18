@@ -2,7 +2,7 @@ from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
-    # Промокоды и их CRUD
+
     path('promocodes/', views.promocode_list_view, name='promocodes'),
     path('promocodes/create/', views.promocode_create, name='promocode_create'),
     path('promocodes/edit/<int:id>/', views.promocode_edit, name='promocode_edit'),
