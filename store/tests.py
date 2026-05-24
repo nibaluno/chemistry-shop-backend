@@ -81,10 +81,10 @@ def test_product_list_view_filters(client):
     Product.objects.create(name="Ариэль", price=100, category=cat, manufacturer=man, unit='шт')
     Product.objects.create(name="Тайд", price=200, category=cat, manufacturer=man, unit='шт')
 
-    # Тест поиска
+
     response = client.get(reverse('product_list'), {'search': 'Ариэль'})
     assert len(response.context['products']) == 1
     
-    # Тест сортировки
+   
     response = client.get(reverse('product_list'), {'sort': 'price_desc'})
     assert response.context['products'][0].name == 'Тайд'

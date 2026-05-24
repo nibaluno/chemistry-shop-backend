@@ -7,9 +7,10 @@
         <h1>{{ news_item.title }}</h1>
         <p><time>{{ news_item.date_published|date:"d F Y" }}</time></p>
         
+    
         {% if news_item.image %}
             <div>
-                <img src="{{ news_item.image.url }}" alt="{{ news_item.title }}">
+                <img src="{{ news_item.image.url }}" alt="{{ news_item.title }}" style="max-width: 600px;">
             </div>
         {% endif %}
         

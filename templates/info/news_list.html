@@ -7,8 +7,16 @@
         {% for news in news_list %}
             <article>
                 <h3>{{ news.title }}</h3>
+                
+      
+                {% if news.image %}
+                    <div>
+                        <img src="{{ news.image.url }}" alt="{{ news.title }}" style="max-width: 200px;">
+                    </div>
+                {% endif %}
+                
                 <p>{{ news.short_content }}</p>
-                <a href="{% url 'news_detail' year=news.date_published|date:'Y' slug=news.slug %}">Читать далее...</a>
+                <p><a href="{% url 'news_detail' year=news.date_published|date:'Y' slug=news.slug %}">Читать далее...</a></p>
                 <p><small>Опубликовано: {{ news.date_published|date:"d.m.Y" }}</small></p>
             </article>
             <hr>

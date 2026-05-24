@@ -15,7 +15,7 @@ from info.models import News, Vacancy, Contact, CompanyInfo
 def run_seed():
     print("Начинаем наполнение базы данных...")
 
-    # 1. Создание суперпользователя
+    # 1. Создание суперпользователя (1 запись)
     if not CustomUser.objects.filter(username='kate').exists():
         CustomUser.objects.create_superuser(
             username='kate', 
@@ -27,32 +27,59 @@ def run_seed():
     else:
         print("Суперпользователь 'kate' уже существует.")
 
-    # 2. Категории и производитель
-    cat1, _ = Category.objects.get_or_create(slug="poroshki", defaults={'name': "Порошки"})
-    cat2, _ = Category.objects.get_or_create(slug="geli", defaults={'name': "Гели"})
-    man, _ = Manufacturer.objects.get_or_create(name="Henkel", defaults={'country': "Германия"})
+    # 2. Категории (10 штук)
+    categories = []
+    cat_names = ["Порошки", "Гели", "Мыло", "Шампуни", "Кондиционеры", 
+                 "Средства для мытья посуды", "Чистящие средства", "Освежители воздуха", 
+                 "Отбеливатели", "Пятновыводители"]
+    for i, name in enumerate(cat_names[:10], 1):
+        cat, _ = Category.objects.get_or_create(
+            slug=f"cat-{i}",
+            defaults={'name': name}
+        )
+        categories.append(cat)
+    print(f"Создано {len(categories)} категорий.")
 
-    # 3. Товары (15 штук)
+    # 3. Производители (10 штук)
+    manufacturers = []
+    man_data = [
+        ("Henkel", "Германия"),
+        ("Procter & Gamble", "США"),
+        ("Unilever", "Великобритания"),
+        ("Nefis", "Россия"),
+        ("Amway", "США"),
+        ("Clorox", "США"),
+        ("Reckitt", "Великобритания"),
+        ("SC Johnson", "США"),
+        ("Church & Dwight", "США"),
+        ("Kao", "Япония"),
+    ]
+    for name, country in man_data:
+        man, _ = Manufacturer.objects.get_or_create(name=name, defaults={'country': country})
+        manufacturers.append(man)
+    print(f"Создано {len(manufacturers)} производителей.")
+
+    # 4. Товары (10 штук)
     if Product.objects.count() == 0:
         products = []
-        for i in range(15):
+        for i in range(10):
             p = Product.objects.create(
                 name=f"Товар №{i+1}",
-                category=cat1 if i % 2 == 0 else cat2,
-                manufacturer=man,
-                price=100 + i*10,
+                category=categories[i % len(categories)],
+                manufacturer=manufacturers[i % len(manufacturers)],
+                price=100 + i * 20,
                 unit='шт',
-                stock=100
+                stock=random.randint(50, 200)
             )
             products.append(p)
-        print("Создано 15 товаров.")
+        print("Создано 10 товаров.")
     else:
         products = list(Product.objects.all())
 
-    # 4. Покупатели (12 человек по разным городам)
-    cities = ["Минск", "Брест", "Гродно", "Витебск", "Гомель", "Могилев"]
-    for i in range(12):
-        username = f"buyer{i}"
+    # 5. Покупатели (10 человек)
+    cities = ["Минск", "Брест", "Гродно", "Витебск", "Гомель", "Могилев", "Гродно", "Бобруйск", "Пинск", "Орша"]
+    for i in range(10):
+        username = f"buyer{i+1}"
         user, created = CustomUser.objects.get_or_create(username=username)
         if created:
             user.set_password('123')
@@ -60,23 +87,24 @@ def run_seed():
             user.city = cities[i % len(cities)]
             user.first_name = "Клиент"
             user.last_name = f"Тестовый_{i+1}"
-            from datetime import date
             birth_year = date.today().year - random.randint(18, 65)
             birth_month = random.randint(1, 12)
             birth_day = random.randint(1, 28)
             user.birth_date = date(birth_year, birth_month, birth_day)
             user.save()
-    print("Создано 12 покупателей.")
+    print("Создано 10 покупателей.")
 
-    # 5. Сотрудники и контакты
-    positions = ["Менеджер", "Продавец", "Директор"]
-    for i in range(3):
-        emp_username = f"employee{i}"
+    # 6. Сотрудники и контакты (10 человек)
+    positions = ["Менеджер", "Продавец", "Директор", "Бухгалтер", "Логист", 
+                 "Кладовщик", "Водитель", "Уборщик", "Секретарь", "Юрист"]
+    for i in range(10):
+        emp_username = f"employee{i+1}"
         emp_user, created = CustomUser.objects.get_or_create(username=emp_username)
         if created:
             emp_user.set_password('123')
             emp_user.role = 'employee'
-            emp_user.first_name = "Иван"
+            emp_user.first_name = ["Иван", "Петр", "Сергей", "Анна", "Елена", 
+                                   "Мария", "Ольга", "Дмитрий", "Алексей", "Татьяна"][i]
             emp_user.last_name = f"Сотрудник_{i+1}"
             emp_user.save()
             
@@ -84,73 +112,78 @@ def run_seed():
                 employee=emp_user,
                 defaults={
                     'position': positions[i],
-                    'phone': f'+375 (29) 111-22-3{i}',
-                    'email': f'emp{i}@company.com',
-                    'photo': 'contacts/-9.jpg'
+                    'phone': f'+375 (29) 111-22-{i}3',
+                    'email': f'emp{i+1}@company.com',
+                    'photo': 'contacts/default.jpg'
                 }
             )
-    print("Создано 3 сотрудника и их контактные карточки.")
+    print("Создано 10 сотрудников и их контактные карточки.")
 
-    # 6. Информация о компании
+    # 7. Информация о компании (1 запись)
     if not CompanyInfo.objects.exists():
         CompanyInfo.objects.create(
             about_text="Мы — лучший магазин бытовой химии в стране!",
             requisites="УНП 123456789, ЗАО 'ХимТорг'",
-            logo='company/f9876904d16fa734c312715150f40317.jpg'
+            logo='company/logo.jpg'
         )
         print("Информация о компании добавлена.")
 
-    # 7. Новости
-    for i in range(3):
-        News.objects.get_or_create(
+    # 8. Новости (10 штук)
+    for i in range(10):
+        news_item, created = News.objects.get_or_create(
             slug=f"novost-{i+1}",
             defaults={
                 'title': f"Новость №{i+1}",
-                'short_content': "Краткое описание новости для теста.",
-                'full_content': "Полный текст новости с подробностями."
+                'short_content': f"Краткое описание новости №{i+1} для теста.",
+                'full_content': f"Полный текст новости №{i+1} с подробностями о жизни компании.",
+                'image': f'news/{i+1}.jpg'
             }
         )
-    print("Создано 3 новости.")
+    print("Создано 10 новостей.")
 
-    # 8. Вакансии
-    for i in range(3):
+    # 9. Вакансии (10 штук)
+    vac_titles = [
+        "Менеджер по продажам", "Продавец-консультант", "Кладовщик", "Водитель-экспедитор",
+        "Бухгалтер", "Логист", "Уборщик помещений", "Грузчик", "Администратор", "Специалист по закупкам"
+    ]
+    for i in range(10):
         Vacancy.objects.get_or_create(
-            title=f"Вакансия №{i+1}",
-            defaults={'description': "Требуется сотрудник на полный рабочий день."}
+            title=vac_titles[i],
+            defaults={'description': f"Требуется {vac_titles[i].lower()} на полный рабочий день. Опыт работы приветствуется."}
         )
-    print("Создано 3 вакансии.")
+    print("Создано 10 вакансий.")
 
-    # 9. ЗАКАЗЫ (ИСПРАВЛЕНО - теперь для всех товаров)
+    # 10. Заказы (10 штук)
     if Order.objects.count() == 0:
-        buyer = CustomUser.objects.filter(role='buyer').first()
-        
-        for i in range(6):  # 6 месяцев
-            order_date = timezone.now() - timedelta(days=i * 30)
-            order = Order.objects.create(client=buyer, delivery_date=date.today() + timedelta(days=5))
-            order.created_at = order_date
-            order.save()
-            
-            # Базовая динамика: старые заказы имеют меньше товаров
-            base_quantity = 6 - i  # от 6 (сейчас) до 1 (полгода назад)
-            
-            # 🔥 ИСПРАВЛЕНИЕ: теперь проходим по ВСЕМ товарам
-            for p in products:  # Вместо products[:3]
-                # Случайное количество (база + бонус 1-4)
-                random_qty = base_quantity + random.randint(1, 4)
+        buyers = list(CustomUser.objects.filter(role='buyer'))
+        if buyers:
+            # Создаём 10 заказов с разными датами
+            for i in range(10):
+                buyer = buyers[i % len(buyers)]
+                order_date = timezone.now() - timedelta(days=random.randint(0, 180))
+                order = Order.objects.create(
+                    client=buyer, 
+                    delivery_date=date.today() + timedelta(days=random.randint(1, 14))
+                )
+                order.created_at = order_date
+                order.save()
                 
-                # НЕКОТОРЫЕ ТОВАРЫ НЕ ПОПАДАЮТ В ЗАКАЗ (имитация реальности)
-                # Например, в старых заказах меньше ассортимент
-                probability = 0.7 + (i * 0.05)  # 70% в старых, 95% в новых
+                # Добавляем в заказ от 1 до 5 случайных товаров
+                num_items = random.randint(1, 5)
+                selected_products = random.sample(products, min(num_items, len(products)))
                 
-                if random.random() < probability:
+                for p in selected_products:
+                    quantity = random.randint(1, 10)
                     OrderItem.objects.create(
                         order=order,
                         product=p,
-                        quantity=random_qty,
+                        quantity=quantity,
                         price_at_purchase=p.price
                     )
-        
-        print("Заказы за 6 месяцев созданы (для всех 15 товаров, с растущим трендом).")
+            
+            print("Создано 10 заказов со случайными товарами.")
+        else:
+            print("Нет покупателей для создания заказов.")
     else:
         print("Заказы уже существуют, пропускаем создание.")
 
@@ -158,13 +191,20 @@ def run_seed():
     print("\n" + "="*50)
     print("СТАТИСТИКА ПОСЛЕ ЗАПОЛНЕНИЯ:")
     print("="*50)
-    print(f"Покупателей: {CustomUser.objects.filter(role='buyer').count()}")
+    print(f"Категорий: {Category.objects.count()}")
+    print(f"Производителей: {Manufacturer.objects.count()}")
     print(f"Товаров: {Product.objects.count()}")
+    print(f"Покупателей: {CustomUser.objects.filter(role='buyer').count()}")
+    print(f"Сотрудников: {CustomUser.objects.filter(role='employee').count()}")
+    print(f"Контактов: {Contact.objects.count()}")
+    print(f"Новостей: {News.objects.count()}")
+    print(f"Вакансий: {Vacancy.objects.count()}")
     print(f"Заказов: {Order.objects.count()}")
     print(f"Позиций в заказах: {OrderItem.objects.count()}")
     
     # Выручка по товарам
     total_revenue = 0
+    print("\n📊 ВЫРУЧКА ПО ТОВАРАМ:")
     for p in Product.objects.all():
         revenue = sum(item.quantity * item.price_at_purchase for item in p.orderitem_set.all())
         if revenue > 0:
@@ -173,22 +213,7 @@ def run_seed():
     
     print(f"\n💰 ОБЩАЯ ВЫРУЧКА: {total_revenue:.2f} руб.")
     
-    # Помесячная выручка для проверки тренда
-    print("\n📈 ПОМЕСЯЧНАЯ ВЫРУЧКА (тренд):")
-    from django.db.models import Sum, F
-    from django.db.models.functions import TruncMonth
-    
-    monthly = (Order.objects
-               .annotate(month=TruncMonth('created_at'))
-               .values('month')
-               .annotate(total=Sum(F('orderitem__quantity') * F('orderitem__price_at_purchase')))
-               .order_by('month'))
-    
-    for m in monthly:
-        if m['month']:
-            print(f"  {m['month'].strftime('%B %Y')}: {m['total']:.2f} руб.")
-    
-    print("\nБаза наполнена успешно!")
+    print("\n✅ База наполнена успешно!")
 
 if __name__ == '__main__':
     run_seed()

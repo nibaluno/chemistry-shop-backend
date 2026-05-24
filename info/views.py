@@ -6,7 +6,7 @@ from django.utils import timezone
 from .models import News, CompanyInfo, GlossaryTerm, Contact, Vacancy, PrivacyPolicy
 from store.models import Review
 import logging 
-
+from django.contrib.auth.decorators import user_passes_test
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ def home_view(request):
     except:
         now_local = now_utc 
     
-    #просто календарь
+
     cal = calendar.TextCalendar(firstweekday=0)
     month_cal = cal.formatmonth(now_local.year, now_local.month)
     
@@ -67,12 +67,19 @@ def news_detail_view(request, year, slug):
     
     return render(request, 'info/news_detail.html', {'news_item': news_item})
 
-
+def is_admin(user):
+    """
+    Проверяет, является ли пользователь администратором.
+    Возвращает True или False.
+    Эту функцию использует декоратор @user_passes_test.
+    """
+    return user.is_authenticated and user.is_superuser
 
 def glossary_index(request):
     terms = GlossaryTerm.objects.all()
     return render(request, "info/glossary.html", {"terms": terms})
 
+@user_passes_test(is_admin, login_url='/login/')
 def glossary_create(request):
     if request.method == "POST":
         term_obj = GlossaryTerm()
@@ -82,6 +89,7 @@ def glossary_create(request):
         logger.info(f"Создан новый термин: {term_obj.term}") 
     return HttpResponseRedirect("/glossary/")
 
+@user_passes_test(is_admin, login_url='/login/')
 def glossary_edit(request, id):
     try:
         term_obj = GlossaryTerm.objects.get(id=id)
@@ -97,6 +105,8 @@ def glossary_edit(request, id):
         logger.warning(f"Попытка редактирования несуществующего термина с id={id}")
         return HttpResponseNotFound("<h2>Термин не найден</h2>")
      
+
+@user_passes_test(is_admin, login_url='/login/')
 def glossary_delete(request, id):
     try:
         term_obj = GlossaryTerm.objects.get(id=id)
