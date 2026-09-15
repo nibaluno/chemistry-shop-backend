@@ -1,36 +1,57 @@
 {% extends 'base.html' %}
 
+{% block title %}Заказ №{{ order.id }} — ХимТорг{% endblock %}
+
 {% block content %}
-    <h1>Заказ №{{ order.id }}</h1>
-    <ul>
-        <li><strong>Статус:</strong> {{ order.get_status_display }}</li>
-        <li><strong>Дата оформления:</strong> {{ order.created_at|date:"d/m/Y H:i" }}</li>
-        <li><strong>Планируемая доставка:</strong> {{ order.delivery_date|date:"d/m/Y" }}</li>
-    </ul>
+<article id="order-detail-page" itemscope itemtype="https://schema.org/Order">
 
-    <h3>Товары в заказе</h3>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Товар</th>
-                <th>Кол-во</th>
-                <th>Цена при покупке</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in order.orderitem_set.all %}
-            <tr>
-                <td>{{ item.product.name }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>{{ item.price_at_purchase }} руб.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <header>
+        <h1>Заказ №<span itemprop="orderNumber">{{ order.id }}</span></h1>
+    </header>
 
-    {% if order.promo_code %}
-        <p>Применен промокод: <strong>{{ order.promo_code.code }}</strong></p>
-    {% endif %}
+    <section aria-labelledby="order-info-heading">
+        <h2 id="order-info-heading">Информация о заказе</h2>
+        <dl>
+            <dt>Статус:</dt>
+            <dd itemprop="orderStatus">{{ order.get_status_display }}</dd>
+            <dt>Дата оформления:</dt>
+            <dd><time datetime="{{ order.created_at|date:'c' }}" itemprop="orderDate">{{ order.created_at|date:"d.m.Y H:i" }}</time></dd>
+            <dt>Планируемая доставка:</dt>
+            <dd><time datetime="{{ order.delivery_date|date:'Y-m-d' }}">{{ order.delivery_date|date:"d.m.Y" }}</time></dd>
+            {% if order.promo_code %}
+            <dt>Промокод:</dt>
+            <dd><code>{{ order.promo_code.code }}</code> (скидка {{ order.promo_code.discount }}%)</dd>
+            {% endif %}
+        </dl>
+    </section>
 
-    <p><a href="{% url 'profile' %}">Назад в профиль</a></p>
+    <section aria-labelledby="order-items-heading">
+        <h2 id="order-items-heading">Товары в заказе</h2>
+        <table class="data-table" aria-label="Товары в заказе">
+            <thead>
+                <tr>
+                    <th id="o-name" scope="col">Товар</th>
+                    <th id="o-qty" scope="col">Кол-во</th>
+                    <th id="o-price" scope="col">Цена при покупке</th>
+                    <th id="o-sum" scope="col">Сумма</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.orderitem_set.all %}
+                <tr>
+                    <th id="oi-{{ item.id }}" scope="row" headers="o-name">{{ item.product.name }}</th>
+                    <td headers="o-qty oi-{{ item.id }}">{{ item.quantity }}</td>
+                    <td headers="o-price oi-{{ item.id }}">{{ item.price_at_purchase }} руб.</td>
+                    <td headers="o-sum oi-{{ item.id }}">{{ item.quantity }} × {{ item.price_at_purchase }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <nav aria-label="Навигация">
+        <p><a href="{% url 'profile' %}" class="btn btn-primary" title="Вернуться в профиль">← Назад в профиль</a></p>
+    </nav>
+
+</article>
 {% endblock %}

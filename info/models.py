@@ -40,6 +40,7 @@ class Vacancy(models.Model):
 class Contact(models.Model):
     employee = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Сотрудник") #oto
     position = models.CharField(max_length=100, verbose_name="Должность")
+    job_description = models.TextField(blank=True, null=True, verbose_name="Описание выполняемых работ") 
     photo = models.ImageField(upload_to='contacts/', blank=True, null=True, verbose_name="Фото")
     phone = models.CharField(max_length=20, verbose_name="Телефон")
     email = models.EmailField(verbose_name="Email")
@@ -64,3 +65,32 @@ class PrivacyPolicy(models.Model):
     class Meta:
         verbose_name = "Политика конфиденциальности"
         verbose_name_plural = "Политика конфиденциальности"
+
+
+#«...список компаний партнеров + их логотипы со ссылками на сайты компаний 
+# – выбрать произвольно и добавить таблицу в базу данных»
+
+class Partner(models.Model):
+    name = models.CharField(max_length=150, verbose_name="Название компании")
+    logo = models.ImageField(upload_to='partners/', blank=True, null=True, verbose_name="Логотип")
+    website_url = models.URLField(verbose_name="Сайт компании")
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
+
+    class Meta:
+        verbose_name = "Партнёр"
+        verbose_name_plural = "Партнёры"
+
+    PARTNER_STATIC_LOGOS = {
+        'Henkel': 'images/partner-henkel.svg',
+        'Procter & Gamble': 'images/partner-pg.svg',
+        'Unilever': 'images/partner-unilever.svg',
+        'Nefis': 'images/partner-nefis.svg',
+    }
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def static_logo_path(self):
+        """Путь к статическому логотипу, если файл в media не загружен."""
+        return self.PARTNER_STATIC_LOGOS.get(self.name, '')

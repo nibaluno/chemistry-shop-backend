@@ -1,21 +1,47 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ news_item.title }} — ХимТорг{% endblock %}
 
 {% block content %}
-    <p><a href="{% url 'news_list' %}">← Все новости</a></p>
-    
-    <article>
-        <h1>{{ news_item.title }}</h1>
-        <p><time>{{ news_item.date_published|date:"d F Y" }}</time></p>
-        
-    
+<article itemscope itemtype="https://schema.org/NewsArticle" id="news-detail-page">
+
+    <nav aria-label="Навигация">
+        <p><a href="{% url 'news_list' %}" title="Вернуться к списку новостей">← Все новости</a></p>
+    </nav>
+
+    <header>
+        <h1 itemprop="headline">{{ news_item.title }}</h1>
+        <p>
+            Опубликовано:
+            <time datetime="{{ news_item.date_published|date:'c' }}" itemprop="datePublished">
+                {{ news_item.date_published|date:"d F Y, H:i" }}
+            </time>
+        </p>
+    </header>
+
+    <figure>
         {% if news_item.image %}
-            <div>
-                <img src="{{ news_item.image.url }}" alt="{{ news_item.title }}" style="max-width: 600px;">
-            </div>
+            <img src="{{ news_item.image.url }}" alt="{{ news_item.title }}" class="responsive" width="600" itemprop="image">
+        {% else %}
+            <img src="{% static 'images/banner2.svg' %}" alt="{{ news_item.title }}" class="responsive" width="600">
         {% endif %}
-        
-        <div>
-            {{ news_item.full_content|linebreaks }}
-        </div>
-    </article>
+        <figcaption>{{ news_item.short_content }}</figcaption>
+    </figure>
+
+    <section itemprop="articleBody" aria-labelledby="article-body">
+        <h2 id="article-body" hidden>Полный текст</h2>
+        {{ news_item.full_content|linebreaks }}
+    </section>
+
+    <aside aria-labelledby="related-heading">
+        <h2 id="related-heading">Полезные ссылки</h2>
+        <ul>
+            <li><a href="{% url 'product_list' %}">Каталог товаров</a></li>
+            <li><a href="{% url 'promocodes' %}">Актуальные промокоды</a></li>
+            <li><a href="{% url 'contacts' %}">Связаться с нами</a></li>
+        </ul>
+    </aside>
+
+</article>
 {% endblock %}

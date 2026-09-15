@@ -1,22 +1,154 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}О компании — ХимТорг{% endblock %}
+{% block meta_description %}Информация о компании ХимТорг: история, реквизиты, сертификаты, видео о компании.{% endblock %}
 
 {% block content %}
-    <h1>О нашей компании</h1>
+<article id="about-page" itemscope itemtype="https://schema.org/Organization">
 
-    {% if company.logo %}
-        <div>
-            <img src="{{ company.logo.url }}" alt="Логотип компании">
-        </div>
+    <header>
+        <h1 itemprop="name">О нашей компании</h1>
+        <p>Узнайте больше о <strong>«ХимТорг»</strong> — лидере рынка <em>бытовой химии</em> в Беларуси.</p>
+    </header>
+
+    {% if company %}
+    <section id="company-logo" aria-labelledby="logo-heading">
+        <h2 id="logo-heading" hidden>Логотип компании</h2>
+        <figure>
+            {% if company.logo %}
+                <img src="{{ company.logo.url }}" alt="Логотип компании ХимТорг" class="responsive" width="300" itemprop="logo">
+            {% else %}
+                <img src="{% static 'images/logo.svg' %}" alt="Логотип компании ХимТорг" class="responsive" width="300" itemprop="logo">
+            {% endif %}
+            <figcaption>Официальный логотип <abbr title="Закрытое акционерное общество">ЗАО</abbr> «ХимТорг»</figcaption>
+        </figure>
+    </section>
+
+    <section id="company-about" aria-labelledby="about-heading">
+        <h2 id="about-heading">О нас</h2>
+        <p itemprop="description">{{ company.about_text }}</p>
+        <blockquote cite="#company-about">
+            <p>Мы стремимся сделать каждый дом <mark>чище</mark> и <mark>уютнее</mark>.</p>
+        </blockquote>
+    </section>
+
+    <!-- Видео о компании -->
+    <section id="company-video" aria-labelledby="video-heading">
+        <h2 id="video-heading">Видео о компании</h2>
+        
+        {% if company.video_url %}
+        <figure>
+            <video controls width="640" height="360" poster="{% static 'images/banner1.svg' %}" preload="metadata" aria-label="Видеоролик о компании ХимТорг">
+                <source src="{{ company.video_url }}" type="video/mp4">
+                <track kind="captions" srclang="ru" label="Русские субтитры" src="{% static 'documents/captions-ru.vtt' %}" default>
+                Ваш браузер не поддерживает воспроизведение видео.
+            </video>
+            <figcaption>Видеопрезентация компании «ХимТорг»</figcaption>
+        </figure>
+        {% else %}
+        <figure>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/FeJQg512J7s?si=5ptwVL1jU_dX0cWU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <figcaption>Видеопрезентация компании (встроенный плеер)</figcaption>
+        </figure>
+        {% endif %}
+
+        <h3>Аудио-приветствие</h3>
+        <figure>
+            <audio controls preload="metadata" aria-label="Аудио-приветствие от директора">
+                <source src="{% static 'audio/greeting.wav' %}" type="audio/wav">
+                Ваш браузер не поддерживает воспроизведение аудио.
+            </audio>
+            <figcaption>Приветственное сообщение от директора компании (<small>длительность ~2 сек.</small>)</figcaption>
+        </figure>
+    </section>
+
+    <!-- История по годам -->
+    <section id="company-history" aria-labelledby="history-heading">
+        <h2 id="history-heading">История успеха</h2>
+        <ol reversed start="{{ company.history.count }}">
+            {% for item in company.history.all|dictsort:"year" %}
+            <li>
+                <time datetime="{{ item.year }}">{{ item.year }}</time> год:
+                <strong>{{ item.event }}</strong>
+            </li>
+            {% empty %}
+            <li>История компании формируется.</li>
+            {% endfor %}
+        </ol>
+    </section>
+
+<!-- Реквизиты — таблица с headers -->
+    <section id="requisites" aria-labelledby="req-heading">
+        <h2 id="req-heading">Реквизиты</h2>
+        <!-- Добавили border="1" cellPadding="8" для простой видимости сетки и отступов -->
+        <table border="1" cellpadding="8" cellspacing="0" class="data-table" aria-describedby="req-desc" style="border-collapse: collapse; width: 100%; max-width: 600px;">
+            <caption id="req-desc" style="caption-side: top; font-weight: bold; margin-bottom: 5px;">Юридические реквизиты ЗАО «ХимТорг»</caption>
+            <thead>
+                <tr>
+                    <th id="req-name" scope="col" style="text-align: left;">Параметр</th>
+                    <th id="req-value" scope="col" style="text-align: left;">Значение</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th id="r-unp" scope="row" headers="req-name" style="text-align: left; font-weight: normal;">УНП</th>
+                    <td headers="req-value r-unp">123456789</td>
+                </tr>
+                <tr>
+                    <th id="r-name" scope="row" headers="req-name" style="text-align: left; font-weight: normal;">Полное наименование</th>
+                    <td headers="req-value r-name">ЗАО «ХимТорг»</td>
+                </tr>
+                <tr>
+                    <th id="r-addr" scope="row" headers="req-name" style="text-align: left; font-weight: normal;">Юридический адрес</th>
+                    <td headers="req-value r-addr">220000, г. Минск, ул. Химическая, 1</td>
+                </tr>
+                <tr>
+                    <th id="r-bank" scope="row" headers="req-name" style="text-align: left; font-weight: normal;">Банковские реквизиты</th>
+                    <td headers="req-value r-bank">{{ company.requisites|linebreaksbr }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Сертификат -->
+    <section id="certificate" aria-labelledby="cert-heading">
+        <h2 id="cert-heading">Сертификат качества</h2>
+        {% if company.certificate_text %}
+        <pre aria-label="Текст сертификата качества">{{ company.certificate_text }}</pre>
+        {% else %}
+        <pre aria-label="Текст сертификата качества">
+╔══════════════════════════════════════════════════╗
+║           СЕРТИФИКАТ КАЧЕСТВА № 001              ║
+║                                                  ║
+║  Настоящим подтверждается, что продукция         ║
+║  ЗАО «ХимТорг» соответствует требованиям         ║
+║  ГОСТ и ТР ТС 009/2011 «О безопасности           ║
+║  парфюмерно-косметической продукции».            ║
+║                                                  ║
+║  Дата выдачи: 15.03.2025                         ║
+║  Действителен до: 15.03.2028                     ║
+║                                                  ║
+║  Подпись: _______________  Печать: [  ]          ║
+╚══════════════════════════════════════════════════╝
+        </pre>
+        {% endif %}
+        <p><a href="{% static 'documents/privacy-policy.txt' %}" download title="Скачать документ">Скачать документ о компании (TXT)</a></p>
+    </section>
+
+    {% else %}
+    <p>Информация о компании скоро будет добавлена.</p>
     {% endif %}
 
-    <p>{{ company.about_text }}</p>
-    
-    <h3>История успеха</h3>
-    <ul>
-        {% for item in company.history.all|dictsort:"year" %}
-            <li>
-                <strong>{{ item.year }} год:</strong> {{ item.event }}
-            </li>
-        {% endfor %}
-    </ul>
+    <nav aria-label="Навигация по разделу">
+        <ul>
+            <li><a href="#company-about">О нас</a></li>
+            <li><a href="#company-video">Видео</a></li>
+            <li><a href="#company-history">История</a></li>
+            <li><a href="#requisites">Реквизиты</a></li>
+            <li><a href="#certificate">Сертификат</a></li>
+        </ul>
+    </nav>
+
+</article>
 {% endblock %}

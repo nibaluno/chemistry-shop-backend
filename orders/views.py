@@ -1,8 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.db.models import DecimalField, Sum, Count, F
 from django.db.models.functions import TruncMonth, Coalesce
+from django.contrib import messages
+from django.utils import timezone
+from datetime import date, timedelta
+from decimal import Decimal
 
 from .models import Order, PromoCode, OrderItem
 from store.models import Product, Category
@@ -10,19 +14,41 @@ from users.models import CustomUser
 
 import numpy as np
 import statistics
-from datetime import date
-from decimal import Decimal
-
 import matplotlib
-matplotlib.use('Agg') 
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import io
 import base64
 import logging
-logger = logging.getLogger(__name__) 
+
+logger = logging.getLogger(__name__)
+
+
+def _get_cart(request):
+    return request.session.get('cart', {})
+
+
+def _save_cart(request, cart):
+    request.session['cart'] = cart
+    request.session.modified = True
+
+
+def _cart_items(request):
+    cart = _get_cart(request)
+    items = []
+    total = Decimal('0')
+    for pid, qty in cart.items():
+        try:
+            product = Product.objects.get(pk=int(pid))
+            subtotal = product.price * qty
+            items.append({'product': product, 'quantity': qty, 'subtotal': subtotal})
+            total += subtotal
+        except Product.DoesNotExist:
+            continue
+    return items, total
+
 
 def get_graph():
-    """Вспомогательная функция для конвертации графика в Base64"""
     buffer = io.BytesIO()
     plt.savefig(buffer, format='png', bbox_inches='tight')
     buffer.seek(0)
@@ -32,6 +58,7 @@ def get_graph():
     plt.close()
     return graphic
 
+
 def promocode_list_view(request):
     active_promos = PromoCode.objects.filter(is_active=True)
     archive_promos = PromoCode.objects.filter(is_active=False)
@@ -40,9 +67,10 @@ def promocode_list_view(request):
         'archive_promos': archive_promos,
     })
 
+
 def promocode_create(request):
     if not request.user.is_superuser:
-        logger.warning(f"Несанкционированный доступ к созданию промокода: {request.user}") 
+        logger.warning(f"Несанкционированный доступ к созданию промокода: {request.user}")
         return HttpResponseNotFound("Доступ запрещен")
     if request.method == "POST":
         p = PromoCode()
@@ -51,13 +79,13 @@ def promocode_create(request):
         p.expiry_date = request.POST.get("expiry_date")
         p.is_active = True
         p.save()
-        logger.info(f"Админ {request.user} создал промокод: {p.code}")  
+        logger.info(f"Админ {request.user} создал промокод: {p.code}")
         return redirect('promocodes')
     return render(request, 'orders/promocode_form.html')
 
+
 def promocode_edit(request, id):
     if not request.user.is_superuser:
-        logger.warning(f"Несанкционированный доступ к редактированию промокода: {request.user}")
         return HttpResponseNotFound("Доступ запрещен")
     p = get_object_or_404(PromoCode, id=id)
     if request.method == "POST":
@@ -66,17 +94,15 @@ def promocode_edit(request, id):
         p.expiry_date = request.POST.get("expiry_date")
         p.is_active = request.POST.get("is_active") == 'on'
         p.save()
-        logger.info(f"Админ {request.user} изменил промокод: {p.code}") 
         return redirect('promocodes')
     return render(request, 'orders/promocode_form.html', {'promo': p})
 
+
 def promocode_delete(request, id):
     if not request.user.is_superuser:
-        logger.warning(f"Несанкционированный доступ к удалению промокода: {request.user}")
         return HttpResponseNotFound("Доступ запрещен")
     p = get_object_or_404(PromoCode, id=id)
     p.delete()
-    logger.info(f"Админ {request.user} удалил промокод") 
     return redirect('promocodes')
 
 
@@ -85,20 +111,116 @@ def order_detail_view(request, pk):
     order = get_object_or_404(Order, pk=pk, client=request.user)
     return render(request, 'orders/order_detail.html', {'order': order})
 
+
 def cart_view(request):
-    return render(request, 'orders/cart.html')
+    items, total = _cart_items(request)
+    return render(request, 'orders/cart.html', {
+        'cart_items': items,
+        'cart_total': total,
+    })
+
+
+def add_to_cart_view(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+    cart = _get_cart(request)
+    pid = str(product_id)
+    cart[pid] = cart.get(pid, 0) + 1
+    _save_cart(request, cart)
+   
+    return redirect('cart')
+
+
+def remove_from_cart_view(request, product_id):
+    cart = _get_cart(request)
+    pid = str(product_id)
+    if pid in cart:
+        del cart[pid]
+        _save_cart(request, cart)
+        messages.info(request, 'Товар удалён из корзины.')
+    return redirect('cart')
+
+
+def update_cart_view(request, product_id):
+    if request.method == 'POST':
+        cart = _get_cart(request)
+        pid = str(product_id)
+        action = request.POST.get('action')
+        if pid in cart:
+            if action == 'increase':
+                cart[pid] += 1
+            elif action == 'decrease' and cart[pid] > 1:
+                cart[pid] -= 1
+            elif action == 'decrease' and cart[pid] == 1:
+                del cart[pid]
+            _save_cart(request, cart)
+    return redirect('cart')
+
+
+@login_required
+def checkout_view(request):
+    items, total = _cart_items(request)
+    if not items:
+        messages.warning(request, 'Корзина пуста.')
+        return redirect('cart')
+
+    promo = None
+    discount_amount = Decimal('0')
+    final_total = total
+
+    if request.method == 'POST':
+        promo_code_str = request.POST.get('promo_code', '').strip()
+        if promo_code_str:
+            try:
+                promo = PromoCode.objects.get(code=promo_code_str, is_active=True)
+                if promo.expiry_date >= date.today():
+                    discount_amount = total * Decimal(promo.discount) / 100
+                    final_total = total - discount_amount
+                else:
+                    messages.error(request, 'Промокод просрочен.')
+                    promo = None
+            except PromoCode.DoesNotExist:
+                messages.error(request, 'Промокод не найден.')
+
+        delivery_date_str = request.POST.get('delivery_date')
+        payment_method = request.POST.get('payment_method')
+        address = request.POST.get('address', '').strip()
+
+        if not delivery_date_str or not payment_method or not address:
+            messages.error(request, 'Заполните все обязательные поля.')
+        else:
+            order = Order.objects.create(
+                client=request.user,
+                delivery_date=delivery_date_str,
+                promo_code=promo,
+            )
+            for item in items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item['product'],
+                    quantity=item['quantity'],
+                    price_at_purchase=item['product'].price,
+                )
+            _save_cart(request, {})
+            messages.success(request, f'Заказ №{order.id} успешно оформлен!')
+            return redirect('order_detail', pk=order.id)
+
+    active_promos = PromoCode.objects.filter(is_active=True, expiry_date__gte=date.today())
+    return render(request, 'orders/checkout.html', {
+        'cart_items': items,
+        'cart_total': total,
+        'discount_amount': discount_amount,
+        'final_total': final_total,
+        'active_promos': active_promos,
+        'min_delivery_date': (date.today() + timedelta(days=1)).isoformat(),
+    })
 
 
 @login_required
 def admin_dashboard(request):
     if not request.user.is_superuser:
-        logger.warning(f"Попытка доступа в дашборд без прав: {request.user}") 
         return HttpResponseNotFound("Доступ только для админа")
-    
-    logger.info(f"Администратор {request.user.username} открыл страницу аналитики") 
 
     context = {}
-
     context['categories'] = Category.objects.prefetch_related('products').all()
 
     clients_by_city = list(
@@ -113,7 +235,7 @@ def admin_dashboard(request):
     product_sales = Product.objects.annotate(
         total_sold=Coalesce(Sum('orderitem__quantity'), 0)
     ).order_by('-total_sold')
-    context['most_popular']  = product_sales.first()
+    context['most_popular'] = product_sales.first()
     context['least_popular'] = product_sales.last()
 
     products_summary = Product.objects.annotate(
@@ -126,7 +248,7 @@ def admin_dashboard(request):
     ).order_by('name')
     context['products_summary'] = products_summary
     context['total_all_revenue'] = sum(float(p.total_revenue) for p in products_summary)
-    context['total_all_qty']     = sum(p.total_qty for p in products_summary)
+    context['total_all_qty'] = sum(p.total_qty for p in products_summary)
 
     monthly_sales = list(
         Order.objects
@@ -145,7 +267,7 @@ def admin_dashboard(request):
     context['monthly_sales'] = monthly_sales
 
     months_labels = [m['month'].strftime('%b %Y') for m in monthly_sales if m['month']]
-    sales_data    = [float(m['total']) for m in monthly_sales]
+    sales_data = [float(m['total']) for m in monthly_sales]
     context['annual_revenue'] = round(sum(sales_data), 2)
 
     profitable_cats = list(
@@ -159,7 +281,7 @@ def admin_dashboard(request):
         ).order_by('-revenue')
     )
     context['most_profitable_cat'] = profitable_cats[0] if profitable_cats else None
-    context['profitable_cats']     = profitable_cats
+    context['profitable_cats'] = profitable_cats
 
     orders_totals = list(
         Order.objects.annotate(
@@ -173,7 +295,7 @@ def admin_dashboard(request):
 
     if orders_totals:
         totals_float = [float(x) for x in orders_totals]
-        context['mean_sales']   = round(statistics.mean(totals_float), 2)
+        context['mean_sales'] = round(statistics.mean(totals_float), 2)
         context['median_sales'] = round(statistics.median(totals_float), 2)
         try:
             context['mode_sales'] = round(statistics.mode(totals_float), 2)
@@ -183,27 +305,26 @@ def admin_dashboard(request):
         context['mean_sales'] = context['median_sales'] = context['mode_sales'] = 0
 
     buyers = CustomUser.objects.filter(role='buyer', birth_date__isnull=False)
-    today  = date.today()
-    ages   = [
+    today = date.today()
+    ages = [
         today.year - b.birth_date.year - ((today.month, today.day) < (b.birth_date.month, b.birth_date.day))
         for b in buyers
     ]
     if ages:
-        context['mean_age']   = round(statistics.mean(ages), 1)
+        context['mean_age'] = round(statistics.mean(ages), 1)
         context['median_age'] = statistics.median(ages)
     else:
         context['mean_age'] = context['median_age'] = 'Нет данных'
 
     trend_data = []
-    forecast   = 0
+    forecast = 0
     if len(sales_data) > 1:
         x = np.arange(len(sales_data))
         y = np.array(sales_data)
         k, b = np.polyfit(x, y, 1)
         trend_data = [round(float(k * xi + b), 2) for xi in x]
-        forecast   = round(float(k * len(sales_data) + b), 2)
+        forecast = round(float(k * len(sales_data) + b), 2)
     context['forecast'] = max(forecast, 0)
-
 
     plt.figure(figsize=(8, 4))
     if months_labels:

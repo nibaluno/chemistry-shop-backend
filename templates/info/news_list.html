@@ -1,27 +1,52 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Новости — ХимТорг{% endblock %}
 
 {% block content %}
-    <h1>Новости магазина</h1>
-    
-    <section>
+<article id="news-list-page">
+
+    <header>
+        <h1>Новости магазина</h1>
+        <p>Актуальные новости и события компании <strong>«ХимТорг»</strong>.</p>
+    </header>
+
+    <section aria-labelledby="news-items-heading">
+        <h2 id="news-items-heading" hidden>Список новостей</h2>
+
         {% for news in news_list %}
-            <article>
-                <h3>{{ news.title }}</h3>
-                
-      
+        <article itemscope itemtype="https://schema.org/NewsArticle" id="news-{{ news.id }}" data-news-id="{{ news.id }}">
+            <header>
+                <h3 itemprop="headline">{{ news.title }}</h3>
+                <p>
+                    <time datetime="{{ news.date_published|date:'c' }}" itemprop="datePublished">
+                        {{ news.date_published|date:"d.m.Y H:i" }}
+                    </time>
+                </p>
+            </header>
+
+            <figure>
                 {% if news.image %}
-                    <div>
-                        <img src="{{ news.image.url }}" alt="{{ news.title }}" style="max-width: 200px;">
-                    </div>
+                    <img src="{{ news.image.url }}" alt="{{ news.title }}" class="responsive" width="400" height="250" loading="lazy" itemprop="image">
+                {% else %}
+                    <img src="{% static 'images/banner1.svg' %}" alt="{{ news.title }}" class="responsive" width="400" height="250" loading="lazy">
                 {% endif %}
-                
-                <p>{{ news.short_content }}</p>
-                <p><a href="{% url 'news_detail' year=news.date_published|date:'Y' slug=news.slug %}">Читать далее...</a></p>
-                <p><small>Опубликовано: {{ news.date_published|date:"d.m.Y" }}</small></p>
-            </article>
+                <figcaption>{{ news.short_content }}</figcaption>
+            </figure>
+
+            <p itemprop="description">{{ news.short_content }}</p>
+            <p>
+                <a href="{% url 'news_detail' year=news.date_published|date:'Y' slug=news.slug %}"
+                   class="btn btn-primary"
+                   title="Читать полную статью: {{ news.title }}"
+                   itemprop="url">Читать далее →</a>
+            </p>
             <hr>
+        </article>
         {% empty %}
-            <p>Новостей пока нет.</p>
+        <p>Новостей пока нет.</p>
         {% endfor %}
     </section>
+
+</article>
 {% endblock %}

@@ -1,46 +1,76 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Каталог — ХимТорг{% endblock %}
 
 {% block content %}
-<h1>Каталог бытовой химии</h1>
+<article id="catalog-page">
 
-<section>
-    <form method="get">
-        <input type="text" name="search" placeholder="Найти товар..." value="{{ request.GET.search }}">
-        <select name="sort">
-            <option value="">Сортировка</option>
-            <option value="price_asc">Дешевле</option>
-            <option value="price_desc">Дороже</option>
-        </select>
-        <button type="submit">Применить</button>
-        <a href="{% url 'product_list' %}">Сбросить</a>
-    </form>
-</section>
+    <header>
+        <h1>Каталог бытовой химии</h1>
+        <p>Широкий ассортимент <em>моющих средств</em>, <em>порошков</em> и <em>аксессуаров</em> для дома.</p>
+    </header>
 
-{% if user.is_superuser %}
-    <p><a href="{% url 'product_create' %}"><strong>[+] Добавить новый товар</strong></a></p>
-{% endif %}
+    <section aria-labelledby="search-heading">
+        <h2 id="search-heading">Поиск и сортировка</h2>
+        <form method="get" aria-label="Форма поиска товаров" novalidate>
+            <fieldset>
+                <legend>Фильтры</legend>
+                <p>
+                    <label for="search">Найти товар:</label>
+                    <input type="search" name="search" id="search"
+                           placeholder="Например: порошок"
+                           value="{{ request.GET.search }}"
+                           minlength="1" maxlength="100">
+                </p>
+                <p>
+                    <label for="sort">Сортировка:</label>
+                    <select name="sort" id="sort">
+                        <option value="">По умолчанию</option>
+                        <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Дешевле</option>
+                        <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Дороже</option>
+                    </select>
+                </p>
+                <button type="submit" class="btn btn-primary">Применить</button>
+                <a href="{% url 'product_list' %}" class="btn btn-warning">Сбросить</a>
+            </fieldset>
+        </form>
+    </section>
 
-<hr>
+    {% if user.is_superuser %}
+    <p><a href="{% url 'product_create' %}" class="btn btn-success" title="Добавить новый товар">+ Добавить новый товар</a></p>
+    {% endif %}
 
-{% for product in products %}
-    <article>
-        <h3>{{ product.name }}</h3>
-        {% if product.photo %}
-            <img src="{{ product.photo.url }}" alt="{{ product.name }}" width="150">
-        {% endif %}
-        <p>Категория: {{ product.category.name }}</p>
-        <p>Цена: <strong>{{ product.price }} руб.</strong></p>
-        <p><a href="{% url 'product_detail' pk=product.pk %}">Подробнее</a></p>
-        
-        {% if user.is_superuser %}
-            <p>
-                <a href="{% url 'product_edit' product.id %}">Редактировать</a> | 
-                <a href="{% url 'product_delete' product.id %}">Удалить</a>
-            </p>
-        {% endif %}
-    </article>
-    <hr>
-{% empty %}
-    <p>Товары не найдены.</p>
-{% endfor %}
+    <section aria-labelledby="products-heading">
+        <h2 id="products-heading">Товары</h2>
+        <div class="catalog-grid" role="list">
+            {% for product in products %}
+            <article class="product-card" role="listitem" itemscope itemtype="https://schema.org/Product" data-product-id="{{ product.id }}">
+                <figure>
+                    {% if product.photo %}
+                        <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="responsive" width="200" height="150" loading="lazy" itemprop="image">
+                    {% else %}
+                        <img src="{% static 'images/product.png' %}" alt="{{ product.name }}" class="responsive" width="200" height="150" loading="lazy">
+                    {% endif %}
+                    <figcaption itemprop="name">{{ product.name }}</figcaption>
+                </figure>
+                <p>Категория: {{ product.category.name }}</p>
+                <p>Цена: <strong>{{ product.price }} руб.</strong></p>
+                <p>
+                    <a href="{% url 'product_detail' pk=product.pk %}" class="btn btn-primary" title="Подробнее о {{ product.name }}">Подробнее</a>
+                </p>
+                {% if user.is_superuser %}
+                <p>
+                    <a href="{% url 'product_edit' product.id %}">Редактировать</a> |
+                    <a href="{% url 'product_delete' product.id %}">Удалить</a>
+                </p>
+                {% endif %}
+            </article>
+            {% empty %}
+            <p>Товары не найдены.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+</article>
 {% endblock %}

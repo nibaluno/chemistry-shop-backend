@@ -1,19 +1,61 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Контакты — ХимТорг{% endblock %}
 
 {% block content %}
-    <h1>Наши контакты</h1>
-    <section>
-        {% for c in contacts %}
-            <article>
-                {% if c.photo %}
-                    <img src="{{ c.photo.url }}" alt="{{ c.employee.get_full_name }}">
-                {% endif %}
-                <h4>{{ c.employee.get_full_name }}</h4>
-                <p>Должность: {{ c.position }}</p>
-                <p>Тел: {{ c.phone }}</p>
-                <p>Email: {{ c.email }}</p>
-            </article>
-            <hr>
-        {% endfor %}
+<article id="contacts-page" itemscope itemtype="https://schema.org/Organization">
+
+    <header>
+        <h1>Контакты</h1>
+        <p>Свяжитесь с нами — мы всегда рады помочь!</p>
+    </header>
+
+    <section aria-labelledby="office-heading">
+        <h2 id="office-heading">Наш офис</h2>
+        <address itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+            <p>
+                <span itemprop="addressLocality">г. Минск</span>,
+                <span itemprop="streetAddress">ул. Химическая, 1</span>
+            </p>
+            <p>Телефон: <a href="tel:+375172000000" itemprop="telephone">+375 (17) 200-00-00</a></p>
+            <p>Email: <a href="mailto:info@himtorg.by" itemprop="email">info@himtorg.by</a></p>
+        </address>
+        <p>Режим работы: <time datetime="09:00">09:00</time> — <time datetime="18:00">18:00</time>, пн–пт</p>
     </section>
+
+    <section aria-labelledby="staff-heading">
+        <h2 id="staff-heading">Наши сотрудники</h2>
+        <div class="contacts-grid" role="list">
+            {% for c in contacts %}
+            <article class="contact-card" role="listitem" itemscope itemtype="https://schema.org/Person" data-contact-id="{{ c.id }}">
+                <figure>
+                    {% if c.photo %}
+                        <img src="{{ c.photo.url }}" alt="Фото {{ c.employee.get_full_name }}" width="120" height="120" class="responsive" itemprop="image">
+                    {% else %}
+                        <img src="{% static 'images/product-placeholder.svg' %}" alt="Фото {{ c.employee.get_full_name }}" width="120" height="120">
+                    {% endif %}
+                    <figcaption>
+                        <h3 itemprop="name">{{ c.employee.get_full_name }}</h3>
+                    </figcaption>
+                </figure>
+                <p><strong itemprop="jobTitle">{{ c.position }}</strong></p>
+                {% if c.job_description %}
+                <p itemprop="description">{{ c.job_description }}</p>
+                {% else %}
+                <p>Выполняет задачи в области <em>{{ c.position|lower }}</em>.</p>
+                {% endif %}
+                <ul>
+                    <li>Тел.: <a href="tel:{{ c.phone|cut:' '|cut:'('|cut:')'|cut:'-' }}" itemprop="telephone">{{ c.phone }}</a></li>
+                    <li>Email: <a href="mailto:{{ c.email }}" itemprop="email">{{ c.email }}</a></li>
+                </ul>
+            </article>
+            {% empty %}
+            <p>Информация о сотрудниках скоро будет добавлена.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+
+</article>
 {% endblock %}

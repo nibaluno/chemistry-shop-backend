@@ -1,26 +1,101 @@
 {% extends 'base.html' %}
 
+{% block title %}Отзывы — ХимТорг{% endblock %}
+
 {% block content %}
-    <h1>Отзывы о магазине</h1>
-    
+<article id="reviews-page">
+
+
+    <header>
+        <h1>Отзывы о магазине</h1>
+        <p>Мнения наших покупателей о товарах и сервисе <strong>«ХимТорг»</strong>.</p>
+    </header>   
+
+    <section aria-labelledby="add-review-action-heading">
+        <h2 id="add-review-action-heading" hidden>Добавление отзыва</h2>
+        {% if user.is_authenticated %}
+            <p>
+                <a href="{% url 'reviews_info' %}?add=1#review-form"
+                   class="btn btn-success"
+                   title="Открыть форму для нового отзыва">+ Добавить отзыв</a>
+            </p>
+        {% else %}
+            <p>
+                <a href="{% url 'login' %}?next={% url 'reviews_info' %}%3Fadd%3D1%23review-form"
+                   class="btn btn-success"
+                   title="Войти или зарегистрироваться для добавления отзыва">+ Добавить отзыв</a>
+                <a href="{% url 'register' %}" title="Зарегистрироваться">Зарегистрироваться</a>
+            </p>
+        {% endif %}
+    </section>
+
+
     {% if user.is_authenticated %}
-        <section>
-            <h4>Оставить отзыв</h4>
-            <p>Вы можете оставить отзыв на странице любого товара в каталоге!</p>
-            <p><a href="{% url 'product_list' %}">Перейти к товарам</a></p>
-        </section>
-    {% else %}
-        <p><a href="{% url 'login' %}">Войдите</a>, чтобы оставить отзыв.</p>
+    <section id="review-form" aria-labelledby="review-form-heading">
+        <h2 id="review-form-heading">Форма отзыва</h2>
+        <details {% if open_form %}open{% endif %}>
+            <summary>Заполните форму и нажмите «Отправить»</summary>
+            <form method="post" action="{% url 'reviews_info' %}#review-form" novalidate aria-label="Форма добавления отзыва">
+                {% csrf_token %}
+                <fieldset>
+                    <legend>Новый отзыв</legend>
+                    <p>
+                        <label for="review-product">Товар <abbr title="обязательное поле">*</abbr>:</label>
+                        <select name="product" id="review-product" required aria-required="true">
+                            <option value="">— Выберите товар —</option>
+                            {% for product in products %}
+                            <option value="{{ product.id }}">{{ product.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </p>
+                    <p>
+                        <label for="review-rating">Оценка <abbr title="обязательное поле">*</abbr>:</label>
+                        <select name="rating" id="review-rating" required aria-required="true">
+                            <option value="5">★★★★★ (5)</option>
+                            <option value="4">★★★★☆ (4)</option>
+                            <option value="3">★★★☆☆ (3)</option>
+                            <option value="2">★★☆☆☆ (2)</option>
+                            <option value="1">★☆☆☆☆ (1)</option>
+                        </select>
+                    </p>
+                    <p>
+                        <label for="review-text">Текст отзыва <abbr title="обязательное поле">*</abbr>:</label>
+                        <textarea name="text" id="review-text" rows="4" required minlength="10" maxlength="1000"
+                                  aria-required="true" placeholder="Напишите ваш отзыв (мин. 10 символов)"></textarea>
+                    </p>
+                    <button type="submit" class="btn btn-primary" title="Сохранить отзыв в базе данных">Отправить</button>
+                </fieldset>
+            </form>
+        </details>
+    </section>
     {% endif %}
 
-    <section>
+    <section aria-labelledby="reviews-list-heading">
+        <h2 id="reviews-list-heading">Все отзывы</h2>
+
         {% for r in reviews %}
-            <article>
-                <p><strong>{{ r.user.username }}</strong> (Оценка: {{ r.rating }}/5)</p>
+        <article itemscope itemtype="https://schema.org/Review" data-review-id="{{ r.id }}">
+            <header>
+                <p>
+                    <strong itemprop="author">{{ r.user.username }}</strong> —
+                    <span itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+                        Оценка: <span itemprop="ratingValue">{{ r.rating }}</span>/5
+                    </span>
+                </p>
+                <p>Товар: <a href="{% url 'product_detail' pk=r.product.pk %}">{{ r.product.name }}</a></p>
+            </header>
+            <blockquote itemprop="reviewBody">
                 <p>{{ r.text }}</p>
-                <small>{{ r.date_added|date:"d/m/Y" }}</small>
-            </article>
+            </blockquote>
+            <footer>
+                <time datetime="{{ r.date_added|date:'c' }}" itemprop="datePublished">{{ r.date_added|date:"d.m.Y H:i" }}</time>
+            </footer>
             <hr>
+        </article>
+        {% empty %}
+        <p>Отзывов пока нет.</p>
         {% endfor %}
     </section>
+
+</article>
 {% endblock %}

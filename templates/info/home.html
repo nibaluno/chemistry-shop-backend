@@ -1,26 +1,243 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Главная — Магазин бытовой химии «ХимТорг»{% endblock %}
+{% block meta_description %}ХимТорг — интернет-магазин бытовой химии. Скидки, доставка, широкий ассортимент моющих средств.{% endblock %}
 
 {% block content %}
-    <h1>Главная страница</h1>
-    
-    {% if latest_news %}
-        <section>
-            <h2>Последняя новость: {{ latest_news.title }}</h2>
-            <p>{{ latest_news.short_content }}</p>
-            <a href="{% url 'news_detail' year=latest_news.date_published|date:'Y' slug=latest_news.slug %}">Читать далее...</a>
-        </section>
-    {% else %}
-        <p>Пока новостей нет. Добавьте их в админ-панели!</p>
-    {% endif %}
+<article id="home-page" itemscope itemtype="https://schema.org/WebPage">
 
-    <section>
-        <h3>Информация о времени</h3>
-        <p>Текущая дата: <strong>{{ now_local|date:"d/m/Y" }}</strong></p>
-        <p>Название: <strong>{{ tz_name }}</strong></p>
-        <p>Время локальное: <strong>{{ now_local|time:"H:i" }}</strong></p>
-        <p>Время UTC: <strong>{{ now_utc|time:"H:i" }}</strong></p>
+    <header>
+        <h1 itemprop="headline">Добро пожаловать в магазин <abbr title="Закрытое акционерное общество">ЗАО</abbr> «ХимТорг»</h1>
+        <p itemprop="description">Ваш надёжный поставщик <dfn title="Химические средства для бытовых нужд">бытовой химии</dfn> с <time datetime="2010">2010</time> года.</p>
+    </header>
 
-        <h3>Календарь ({{ now_local|date:"F Y" }})</h3>
-        <pre>{{ month_cal }}</pre>
+    <!-- Логотип компании (из БД или статический) -->
+    <section id="company-logo" aria-labelledby="logo-heading" itemscope itemtype="https://schema.org/Organization">
+        <h2 id="logo-heading">Логотип компании</h2>
+        <figure>
+            {% if company and company.logo %}
+                <img src="{{ company.logo.url }}" alt="Логотип компании ХимТорг" class="responsive company-logo" width="300" height="90" itemprop="logo">
+            {% else %}
+                <img src="{% static 'images/logo.png' %}" alt="Логотип компании ХимТорг" class="responsive company-logo" width="300" height="90" itemprop="logo">
+            {% endif %}
+            <figcaption><span itemprop="name">ЗАО «ХимТорг»</span> — официальный логотип</figcaption>
+        </figure>
     </section>
+
+<!-- Рекламные баннеры (адаптивные изображения через picture) -->
+    <section id="banners" aria-labelledby="banners-heading">
+        <h2 id="banners-heading">Акции и спецпредложения</h2>
+        <div class="banner-carousel" role="region" aria-label="Рекламные баннеры">
+            <figure id="banner-1">
+                <picture>
+                    <source media="(max-width: 768px)" srcset="{% static 'images/banner1.png' %}">
+                    <img src="{% static 'images/banner1.png' %}" alt="Скидки до 30% на бытовую химию" class="responsive" width="800" height="280" loading="eager">
+                </picture>
+                <figcaption>Скидки до 30% на всю бытовую химию — было <del>100%</del>, стало <ins>70%</ins> цены<small><sup>*</sup></small></figcaption>
+            </figure>
+            <figure id="banner-2">
+                <picture>
+                    <source media="(max-width: 768px)" srcset="{% static 'images/banner2.png' %}">
+                    <img src="{% static 'images/banner2.png' %}" alt="Эко-средства для уборки" class="responsive" width="800" height="280" loading="lazy">
+                </picture>
+                <figcaption>Эко-средства — безопасно для семьи и формулы H<sub>2</sub>O</figcaption>
+            </figure>
+            <figure id="banner-3">
+                <picture>
+                    <source media="(max-width: 768px)" srcset="{% static 'images/banner3.png' %}">
+                    <img src="{% static 'images/banner3.png' %}" alt="Бесплатная доставка от 50 BYN" class="responsive" width="800" height="280" loading="lazy">
+                </picture>
+                <figcaption>Бесплатная доставка при заказе от 50 BYN — нажмите <kbd>Ctrl</kbd>+<kbd>K</kbd> для поиска<wbr>товаров</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- Каталог товаров -->
+    <section id="catalog" aria-labelledby="catalog-heading">
+        <h2 id="catalog-heading">Каталог товаров</h2>
+        <p>Ознакомьтесь с нашим <a href="{% url 'product_list' %}" title="Полный каталог товаров">полным каталогом</a> или выберите из популярных позиций:</p>
+
+        <div class="catalog-grid" role="list">
+            {% for product in products %}
+            <article class="product-card" role="listitem" itemscope itemtype="https://schema.org/Product" data-product-id="{{ product.id }}">
+                <figure>
+                    {% if product.photo %}
+                        <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="responsive" width="200" height="150" loading="lazy" itemprop="image">
+                    {% else %}
+                        <img src="{% static 'images/product.png' %}" alt="{{ product.name }}" class="responsive" width="200" height="150" loading="lazy">
+                    {% endif %}
+                    <figcaption itemprop="name">{{ product.name }}</figcaption>
+                </figure>
+                <p>Категория: <em>{{ product.category.name }}</em></p>
+                <p>Цена: <strong itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                    <span itemprop="price">{{ product.price }}</span>
+                    <span itemprop="priceCurrency" content="BYN">руб.</span>
+                </strong></p>
+                <p><a href="{% url 'product_detail' pk=product.pk %}" title="Подробнее о {{ product.name }}" itemprop="url">Подробнее →</a></p>
+            </article>
+            {% empty %}
+            <p>Товары скоро появятся в каталоге.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Последняя новость -->
+    <section id="latest-news" aria-labelledby="news-heading">
+        <h2 id="news-heading">Последняя новость</h2>
+        {% if latest_news %}
+        <article itemscope itemtype="https://schema.org/NewsArticle">
+            <h3 itemprop="headline">{{ latest_news.title }}</h3>
+            <p><time datetime="{{ latest_news.date_published|date:'c' }}" itemprop="datePublished">{{ latest_news.date_published|date:"d.m.Y H:i" }}</time></p>
+            <p itemprop="description">{{ latest_news.short_content }}</p>
+            <p><a href="{% url 'news_detail' year=latest_news.date_published|date:'Y' slug=latest_news.slug %}" title="Читать полную статью" itemprop="url">Читать далее →</a></p>
+        </article>
+        {% else %}
+        <p>Пока новостей нет. <a href="{% url 'news_list' %}">Раздел новостей</a></p>
+        {% endif %}
+    </section>
+
+    <!-- Партнёры -->
+    <section id="partners" aria-labelledby="partners-heading">
+        <h2 id="partners-heading">Наши партнёры</h2>
+        <ul class="partners-list" role="list">
+            {% for partner in partners %}
+            <li role="listitem" data-partner-id="{{ partner.id }}">
+                <a href="{{ partner.website_url }}" target="_blank" rel="noopener noreferrer" title="Сайт {{ partner.name }}">
+                    {% if partner.logo %}
+                        <img src="{{ partner.logo.url }}" alt="Логотип {{ partner.name }}" width="120" height="60" loading="lazy">
+                    {% elif partner.static_logo_path %}
+                        <img src="{% static partner.static_logo_path %}" alt="Логотип {{ partner.name }}" width="120" height="60" loading="lazy">
+                    {% else %}
+                        <span>{{ partner.name }}</span>
+                    {% endif %}
+                </a>
+            </li>
+            {% empty %}
+            <li>Информация о партнёрах скоро будет добавлена.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <!-- Цитата и четверостишие -->
+    <section id="about-quote" aria-labelledby="quote-heading">
+        <h2 id="quote-heading">О нас в цитатах</h2>
+        <blockquote cite="https://himtorg.by/about">
+            <p>«Чистота — это не роскошь, а необходимость каждого дома.»</p>
+            <footer>— <cite>Директор «ХимТорг»</cite></footer>
+        </blockquote>
+
+        <h3>Наш девиз (фиксированный перевод строк — <code>&lt;pre&gt;</code>):</h3>
+        <pre class="poem-fixed" aria-label="Четверостишие с фиксированным переводом строк">Белизна — чистота,
+Свежесть в каждом доме,
+Химия для уборки —
+Магазин «ХимТорг» — наше!</pre>
+
+        <h3>Тот же девиз:</h3>
+        <p class="poem-br">
+            Белизна — чистота,<br>
+            Свежесть в каждом доме,<br>
+            Химия для уборки —<br>
+            Магазин «ХимТорг» — наше!
+        </p>
+    </section>
+
+    <!-- Таблица с headers и объединёнными ячейками -->
+    <section id="price-table" aria-labelledby="table-heading">
+        <h2 id="table-heading">Сравнение популярных категорий</h2>
+        <table class="data-table" aria-describedby="table-desc">
+            <caption id="table-desc">Статистика продаж по категориям бытовой химии за текущий квартал</caption>
+            <thead>
+                <tr>
+                    <th id="th-cat" scope="col" rowspan="2">Категория</th>
+                    <th id="th-sales" scope="col" colspan="2">Продажи</th>
+                    <th id="th-rating" scope="col" rowspan="2">Рейтинг</th>
+                </tr>
+                <tr>
+                    <th id="th-qty" scope="col" headers="th-sales">Кол-во (шт.)</th>
+                    <th id="th-rev" scope="col" headers="th-sales">Выручка (BYN)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th id="r1-cat" scope="row" headers="th-cat">Порошки</th>
+                    <td headers="th-sales th-qty r1-cat">1 250</td>
+                    <td headers="th-sales th-rev r1-cat">18 750.00</td>
+                    <td headers="th-rating r1-cat">4.8</td>
+                </tr>
+                <tr>
+                    <th id="r2-cat" scope="row" headers="th-cat">Гели</th>
+                    <td headers="th-sales th-qty r2-cat">980</td>
+                    <td headers="th-sales th-rev r2-cat">14 700.00</td>
+                    <td headers="th-rating r2-cat">4.6</td>
+                </tr>
+                <tr>
+                    <th id="r3-cat" scope="row" headers="th-cat">Средства для посуды</th>
+                    <td headers="th-sales th-qty r3-cat">2 100</td>
+                    <td headers="th-sales th-rev r3-cat">21 000.00</td>
+                    <td headers="th-rating r3-cat">4.9</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th id="tf-total" scope="row" headers="th-cat">Итого</th>
+                    <td headers="th-sales th-qty tf-total" colspan="2">54 450.00 BYN</td>
+                    <td headers="th-rating tf-total">4.77</td>
+                </tr>
+            </tfoot>
+        </table>
+    </section>
+
+    <!-- Пример листинга кода -->
+    <section id="code-example" aria-labelledby="code-heading">
+        <h2 id="code-heading">Пример расчёта скидки</h2>
+        <p>Наш сайт использует следующий алгоритм расчёта цены со скидкой:</p>
+        <pre><code>def calculate_discount(price, percent):
+    """Рассчитывает цену со скидкой."""
+    return price * (1 - percent / 100)
+
+# Пример: цена 100 BYN, скидка 15%
+final = calculate_discount(100, 15)  # 85.0</code></pre>
+    </section>
+
+    <!-- Информация о времени -->
+    <aside id="time-info" aria-labelledby="time-heading">
+        <h2 id="time-heading">Информация о времени</h2>
+        <dl>
+            <dt>Текущая дата:</dt>
+            <dd><time datetime="{{ now_local|date:'Y-m-d' }}">{{ now_local|date:"d/m/Y" }}</time></dd>
+            <dt>Часовой пояс:</dt>
+            <dd><abbr title="{{ tz_name }}">{{ tz_name }}</abbr></dd>
+            <dt>Локальное время:</dt>
+            <dd><time datetime="{{ now_local|date:'c' }}">{{ now_local|time:"H:i" }}</time></dd>
+            <dt>Время UTC:</dt>
+            <dd><time datetime="{{ now_utc|date:'c' }}">{{ now_utc|time:"H:i" }}</time></dd>
+        </dl>
+        <h3>Календарь ({{ now_local|date:"F Y" }})</h3>
+        <pre aria-label="Календарь текущего месяца">{{ month_cal }}</pre>
+    </aside>
+
+    <!-- Семантическое выделение и элементы управления -->
+    <section id="semantic-demo" aria-labelledby="semantic-heading">
+        <h2 id="semantic-heading">Справка по использованию сайта</h2>
+        <p>Для поиска в каталоге введите запрос и нажмите <kbd>Enter</kbd>. Пример вывода системы: <samp>Найдено: 10 товаров</samp>.</p>
+        <p>Переменная расчёта скидки: <var>discount_percent</var> = 15. Уровень удовлетворённости клиентов:
+            <meter value="0.87" min="0" max="1" low="0.3" high="0.8" optimum="0.9">87%</meter>
+        </p>
+        <p>Обработка заказа: <progress value="75" max="100" aria-label="Прогресс обработки заказа">75%</progress></p>
+        <p>Горячая линия: <a href="tel:+375172000000">+375&nbsp;(17)&nbsp;200-00-00</a> — звонок бесплатный по Беларуси.</p>
+    </section>
+
+    <!-- Якорные ссылки -->
+    <nav aria-label="Быстрые ссылки по странице" id="page-anchors">
+        <h2>Быстрая навигация по странице</h2>
+        <ul>
+            <li><a href="#banners">↑ К баннерам</a></li>
+            <li><a href="#catalog">↑ К каталогу</a></li>
+            <li><a href="#partners">↑ К партнёрам</a></li>
+            <li><a href="#price-table">↑ К таблице</a></li>
+        </ul>
+    </nav>
+
+</article>
 {% endblock %}

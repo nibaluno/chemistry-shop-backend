@@ -1,52 +1,78 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Словарь терминов — ХимТорг{% endblock %}
 
 {% block content %}
-    <h1>Словарь терминов (CRUD)</h1>
+<article id="glossary-page">
 
-    <section>
-        <h3>Добавить новый термин</h3>
-        <form method="POST" action="{% url 'glossary_create' %}">
+    <header>
+        <h1>Словарь терминов и понятий</h1>
+        <p>Часто задаваемые вопросы (<abbr title="Frequently Asked Questions">FAQ</abbr>) о бытовой химии и нашем магазине.</p>
+    </header>
+
+    {% if user.is_superuser %}
+    <section aria-labelledby="add-term-heading">
+        <h2 id="add-term-heading">Добавить новый термин (админ)</h2>
+        <form method="POST" action="{% url 'glossary_create' %}" novalidate>
             {% csrf_token %}
-            <p>
-                <label>Термин:</label><br>
-                <input type="text" name="term" required>
-            </p>
-            <p>
-                <label>Определение:</label><br>
-                <textarea name="definition" rows="3" required></textarea>
-            </p>
-            <button type="submit">Добавить</button>
+            <fieldset>
+                <legend>Новый термин</legend>
+                <p>
+                    <label for="term">Термин / Вопрос:</label>
+                    <input type="text" name="term" id="term" required minlength="2" maxlength="100" aria-required="true">
+                </p>
+                <p>
+                    <label for="definition">Определение / Ответ:</label>
+                    <textarea name="definition" id="definition" rows="3" required minlength="10" aria-required="true"></textarea>
+                </p>
+                <button type="submit" class="btn btn-primary">Добавить</button>
+            </fieldset>
         </form>
     </section>
-
     <hr>
-
-    {% if terms %}
-        <h2>Список терминов</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Термин</th>
-                    <th>Определение</th>
-                    <th>Действия</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for t in terms %}
-                <tr>
-                    <td>{{ t.id }}</td>
-                    <td>{{ t.term }}</td>
-                    <td>{{ t.definition }}</td>
-                    <td>
-                        <a href="{% url 'glossary_edit' t.id %}">Изменить</a>
-                        <a href="{% url 'glossary_delete' t.id %}">Удалить</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>Словарь пока пуст.</p>
     {% endif %}
+
+    <section aria-labelledby="faq-heading">
+        <h2 id="faq-heading">Часто задаваемые вопросы</h2>
+
+        {% if terms %}
+        {% for t in terms %}
+        <details class="faq-item" id="term-{{ t.id }}" data-term-id="{{ t.id }}">
+            <summary>
+                <strong>{{ t.term }}</strong>
+                — добавлено <time datetime="{{ t.date_added|date:'c' }}">{{ t.date_added|date:"d.m.Y" }}</time>
+            </summary>
+            <div class="faq-answer">
+                <p>{{ t.definition }}</p>
+                {% if user.is_superuser %}
+                <p>
+                    <a href="{% url 'glossary_edit' t.id %}">Изменить</a> |
+                    <a href="{% url 'glossary_delete' t.id %}">Удалить</a>
+                </p>
+                {% endif %}
+            </div>
+        </details>
+        {% endfor %}
+        {% else %}
+        <p>Словарь пока пуст.</p>
+        {% endif %}
+    </section>
+
+    <!-- Определения терминов -->
+    <section aria-labelledby="definitions-heading">
+        <h2 id="definitions-heading">Основные определения</h2>
+        <dl>
+            <dt><dfn id="def-detergent">Детергент</dfn></dt>
+            <dd>Органическое вещество с моющими свойствами, основной компонент моющих средств.</dd>
+
+            <dt><dfn id="def-surfactant">ПАВ</dfn> (<abbr title="Поверхностно-активное вещество">поверхностно-активное вещество</abbr>)</dt>
+            <dd>Вещество, снижающее поверхностное натяжение воды и обеспечивающее отмывание загрязнений.</dd>
+
+            <dt><dfn id="def-ph">pH</dfn></dt>
+            <dd>Показатель кислотности или щёлочности среды; важен при выборе средства для разных поверхностей.</dd>
+        </dl>
+    </section>
+
+</article>
 {% endblock %}

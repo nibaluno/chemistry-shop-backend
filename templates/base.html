@@ -1,63 +1,133 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" dir="ltr" itemscope itemtype="https://schema.org/WebPage">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Магазин бытовой химии</title>
-    
+    <meta name="description" content="{% block meta_description %}Магазин бытовой химии «ХимТорг» — широкий ассортимент моющих средств, порошков, гелей и аксессуаров для уборки с доставкой по Беларуси.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}бытовая химия, моющие средства, порошки, гели, ХимТорг, Беларусь{% endblock %}">
+    <meta name="author" content="ЗАО «ХимТорг»">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#1565c0">
+
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="ru_RU">
+    <meta property="og:site_name" content="ХимТорг">
+    <meta property="og:title" content="{% block og_title %}Магазин бытовой химии «ХимТорг»{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Широкий ассортимент бытовой химии с доставкой{% endblock %}">
+
+    <title>{% block title %}Магазин бытовой химии «ХимТорг»{% endblock %}</title>
+
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}" sizes="any">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Store",
+        "name": "ХимТорг",
+        "description": "Магазин бытовой химии",
+        "url": "{{ request.build_absolute_uri }}",
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "BY",
+            "addressLocality": "Минск"
+        }
+    }
+    </script>
+
+    {% block extra_head %}{% endblock %}
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body id="top" data-site="himtorg" data-lang="ru">
 
-    <header>
-        <nav>
-            <ul>
-                <li><a href="{% url 'home' %}">Главная</a></li>
-                <li><a href="{% url 'about' %}">О компании</a></li>
-                <li><a href="{% url 'product_list' %}">Каталог</a></li>
-                <li><a href="{% url 'promocodes' %}">Промокоды</a></li>
-                <li><a href="{% url 'news_list' %}">Новости</a></li>
-                <li><a href="{% url 'glossary' %}">Словарь</a></li>
-                <li><a href="{% url 'contacts' %}">Контакты</a></li>
-                <li><a href="{% url 'vacancies' %}">Вакансии</a></li>
-                <li><a href="{% url 'reviews_info' %}">Отзывы</a></li>
-                <li><a href="{% url 'privacy' %}">Политика</a></li>
+    <a href="#main-content" class="skip-link" tabindex="1" title="Перейти к основному содержимому">Перейти к содержимому</a>
 
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'profile' %}">Профиль ({{ user.username }})</a></li>
+    <header class="site-header" role="banner" id="site-header" itemscope itemtype="https://schema.org/WPHeader">
+        <div class="header-top">
+            <a href="{% url 'home' %}" class="logo-link" title="На главную — ХимТорг" itemprop="url">
+                <img src="{% static 'images/logo.svg' %}" alt="Логотип магазина ХимТорг" width="200" height="60" itemprop="logo">
+                <span itemprop="name" hidden>ХимТорг</span>
+            </a>
 
-                    {% if user.role == 'employee' or user.is_superuser %}
-                        <li><a href="{% url 'client_list' %}">Клиенты (Сотрудник)</a></li>
+            <nav class="nav-horizontal" role="navigation" aria-label="Основная навигация" id="main-nav">
+                <ul role="menubar">
+                    <li role="none"><a href="{% url 'home' %}" role="menuitem" {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>Главная</a></li>
+                    <li role="none"><a href="{% url 'about' %}" role="menuitem" {% if request.resolver_match.url_name == 'about' %}aria-current="page"{% endif %}>О компании</a></li>
+                    <li role="none"><a href="{% url 'product_list' %}" role="menuitem">Каталог</a></li>
+                    <li role="none"><a href="{% url 'cart' %}" role="menuitem" title="Корзина заказа">Корзина</a></li>
+                    <li role="none"><a href="{% url 'news_list' %}" role="menuitem">Новости</a></li>
+                    <li role="none"><a href="{% url 'contacts' %}" role="menuitem">Контакты</a></li>
+
+                    {% if user.is_authenticated %}
+                        <li role="none"><a href="{% url 'profile' %}" role="menuitem">Профиль ({{ user.username }})</a></li>
+                        {% if user.role == 'employee' or user.is_superuser %}
+                            <li role="none"><a href="{% url 'client_list' %}" role="menuitem">Клиенты</a></li>
+                        {% endif %}
+                        {% if user.is_superuser %}
+                            <li role="none"><a href="{% url 'admin_dashboard' %}" role="menuitem">Аналитика</a></li>
+                            <li role="none"><a href="{% url 'admin:index' %}" role="menuitem">Админка</a></li>
+                        {% endif %}
+                        <li role="none">
+                            <form action="{% url 'logout' %}" method="post" data-form-type="logout">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary" title="Выйти из аккаунта">Выйти</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li role="none"><a href="{% url 'login' %}" role="menuitem">Войти</a></li>
+                        <li role="none"><a href="{% url 'register' %}" role="menuitem">Регистрация</a></li>
                     {% endif %}
-
-                    {% if user.is_superuser %}
-                        <li><a href="{% url 'admin_dashboard' %}">Аналитика (Админ)</a></li>
-                        <li><a href="{% url 'admin:index' %}">Вход в Админку</a></li>
-                    {% endif %}
-
-                    <li>
-                        <form action="{% url 'logout' %}" method="post">
-                            {% csrf_token %}
-                            <button type="submit">Выйти</button>
-                        </form>
-                    </li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Войти</a></li>
-                    <li><a href="{% url 'register' %}">Регистрация</a></li>
-                {% endif %}
-            </ul>
-        </nav>
+                </ul>
+            </nav>
+        </div>
     </header>
 
-    <hr>
+    {% if messages %}
+    <aside role="status" aria-live="polite" id="flash-messages" class="flash-messages" style="max-width:1200px;margin:0.5rem auto;padding:0 1rem;">
+        {% for message in messages %}
+            <p data-message-level="{{ message.tags }}" style="padding:0.5rem 1rem;border-radius:4px;background:#e3f2fd;">{{ message }}</p>
+        {% endfor %}
+    </aside>
+    {% endif %}
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+    <div class="layout-wrapper">
+        <nav class="nav-vertical" role="navigation" aria-label="Дополнительная навигация" id="side-nav">
+            <h2 id="side-nav-heading">Разделы</h2>
+            <ul aria-labelledby="side-nav-heading">
+                <li><a href="{% url 'home' %}#catalog" title="Каталог на главной">Каталог</a></li>
+                <li><a href="{% url 'promocodes' %}" title="Промокоды и скидки">Промокоды</a></li>
+                <li><a href="{% url 'glossary' %}" title="Словарь терминов">Словарь</a></li>
+                <li><a href="{% url 'vacancies' %}" title="Открытые вакансии">Вакансии</a></li>
+                <li><a href="{% url 'reviews_info' %}" title="Отзывы покупателей">Отзывы</a></li>
+                <li><a href="{% url 'privacy' %}" title="Политика конфиденциальности">Политика</a></li>
+                <li><a href="{% static 'documents/privacy-policy.txt' %}" download title="Скачать политику конфиденциальности">Скачать политику (TXT)</a></li>
+                <li><a href="#site-footer" title="Перейти к подвалу">К подвалу ↓</a></li>
+            </ul>
+        </nav>
 
-    <hr>
+        <main role="main" id="main-content" tabindex="-1" itemprop="mainContentOfPage">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
 
+    <footer class="site-footer" role="contentinfo" id="site-footer" itemscope itemtype="https://schema.org/WPFooter">
+        <p>&copy; <time datetime="2026">2026</time> <span itemprop="copyrightHolder">ЗАО «ХимТорг»</span>. Все права защищены.</p>
+        <p>
+            <a href="{% url 'privacy' %}" title="Политика конфиденциальности">Политика конфиденциальности</a> |
+            <a href="{% url 'contacts' %}" title="Контактная информация">Контакты</a> |
+            <a href="{% url 'about' %}" title="О компании">О нас</a> |
+            <a href="#top" title="Вернуться наверх">Наверх ↑</a>
+        </p>
+        <address itemscope itemtype="https://schema.org/PostalAddress">
+            <span itemprop="addressLocality">г. Минск</span>,
+            <span itemprop="streetAddress">ул. Химическая, 1</span>,
+            тел.: <a href="tel:+375172000000" itemprop="telephone">+375 (17) 200-00-00</a>,
+            email: <a href="mailto:info@himtorg.by" itemprop="email">info@himtorg.by</a>
+        </address>
+    </footer>
 
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
-

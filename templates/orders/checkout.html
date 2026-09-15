@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block title %}Оплата заказа — ХимТорг{% endblock %}
+
+{% block content %}
+<article id="checkout-page">
+
+    <header>
+        <h1>Оплата товаров</h1>
+        <p>Заполните форму для оформления и оплаты заказа.</p>
+    </header>
+
+    <section aria-labelledby="order-summary-heading">
+        <h2 id="order-summary-heading">Сводка заказа</h2>
+        <table class="data-table" aria-label="Сводка заказа">
+            <thead>
+                <tr>
+                    <th id="s-name" scope="col">Товар</th>
+                    <th id="s-qty" scope="col">Кол-во</th>
+                    <th id="s-price" scope="col">Цена</th>
+                    <th id="s-sum" scope="col">Сумма</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <th id="si-{{ item.product.id }}" scope="row" headers="s-name">{{ item.product.name }}</th>
+                    <td headers="s-qty si-{{ item.product.id }}">{{ item.quantity }}</td>
+                    <td headers="s-price si-{{ item.product.id }}">{{ item.product.price }}</td>
+                    <td headers="s-sum si-{{ item.product.id }}">{{ item.subtotal }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th scope="row" colspan="3" headers="s-name s-qty s-price">Итого:</th>
+                    <td headers="s-sum"><strong>{{ cart_total }} BYN</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </section>
+
+    <section aria-labelledby="payment-form-heading">
+        <h2 id="payment-form-heading">Форма оплаты</h2>
+
+        <form method="post" action="{% url 'checkout' %}" novalidate aria-label="Форма оформления заказа">
+            {% csrf_token %}
+
+            <fieldset>
+                <legend>Данные доставки</legend>
+
+                <p>
+                    <label for="address">Адрес доставки <abbr title="обязательное поле">*</abbr>:</label>
+                    <input type="text" name="address" id="address" required
+                           minlength="5" maxlength="200"
+                           placeholder="г. Минск, ул. Примерная, д. 1, кв. 1"
+                           aria-required="true"
+                           autocomplete="street-address">
+                </p>
+
+                <p>
+                    <label for="delivery_date">Дата доставки <abbr title="обязательное поле">*</abbr>:</label>
+                    <input type="date" name="delivery_date" id="delivery_date" required
+                           min="{{ min_delivery_date }}"
+                           aria-required="true">
+                </p>
+            </fieldset>
+
+            <fieldset>
+                <legend>Способ оплаты</legend>
+
+                <p>
+                    <label for="payment_method">Выберите способ оплаты:</label>
+                    <select name="payment_method" id="payment_method" required aria-required="true">
+                        <option value="">— Выберите —</option>
+                        <option value="card">Банковская карта</option>
+                        <option value="cash">Наличные при получении</option>
+                        <option value="erip">ЕРИП</option>
+                    </select>
+                </p>
+
+                <p>
+                    <label for="card_number">Номер карты (если оплата картой):</label>
+                    <input type="text" name="card_number" id="card_number"
+                           pattern="[0-9]{16}" maxlength="16"
+                           placeholder="1234567890123456"
+                           inputmode="numeric"
+                           title="16 цифр номера карты">
+                </p>
+
+                <p>
+                    <label for="email">Email для чека:</label>
+                    <input type="email" name="email" id="email"
+                           value="{{ user.email }}"
+                           placeholder="email@example.com"
+                           autocomplete="email">
+                </p>
+
+                <p>
+                    <label for="phone">Телефон:</label>
+                    <input type="tel" name="phone" id="phone"
+                           pattern="\+375\s?\([0-9]{2}\)\s?[0-9]{3}-[0-9]{2}-[0-9]{2}"
+                           placeholder="+375 (29) 123-45-67"
+                           autocomplete="tel">
+                </p>
+            </fieldset>
+
+            <fieldset>
+                <legend>Промокод</legend>
+                <p>
+                    <label for="promo_code">Промокод (необязательно):</label>
+                    <input type="text" name="promo_code" id="promo_code"
+                           maxlength="20" placeholder="SUMMER2026"
+                           list="promo-list"
+                           oninput="document.getElementById('discount-output').value = this.value ? 'Скидка будет применена при отправке' : 'Скидка не применена'">
+                    <datalist id="promo-list">
+                        {% for promo in active_promos %}
+                        <option value="{{ promo.code }}">Скидка {{ promo.discount }}%</option>
+                        {% endfor %}
+                    </datalist>
+                </p>
+                <p>
+                    <label for="discount-output">Статус скидки:</label>
+                    <output name="discount_status" id="discount-output" for="promo_code">Скидка не применена</output>
+                </p>
+            </fieldset>
+
+            <fieldset>
+                <legend>Дополнительно</legend>
+                <p>
+                    <label for="comment">Комментарий к заказу:</label>
+                    <textarea name="comment" id="comment" rows="3" maxlength="500" placeholder="Пожелания к доставке"></textarea>
+                </p>
+
+                <p>
+                    <label>
+                        <input type="checkbox" name="agree_terms" required aria-required="true">
+                        Я согласен с <a href="{% url 'privacy' %}" target="_blank">политикой конфиденциальности</a>
+                    </label>
+                </p>
+
+                <p>
+                    <label>Предпочитаемое время доставки:</label>
+                    <input type="radio" name="delivery_time" id="time-morning" value="morning" checked>
+                    <label for="time-morning">Утро (9:00–12:00)</label>
+                    <input type="radio" name="delivery_time" id="time-afternoon" value="afternoon">
+                    <label for="time-afternoon">День (12:00–18:00)</label>
+                    <input type="radio" name="delivery_time" id="time-evening" value="evening">
+                    <label for="time-evening">Вечер (18:00–21:00)</label>
+                </p>
+            </fieldset>
+
+            <p>
+                <button type="submit" class="btn btn-success" title="Подтвердить и оплатить заказ">💳 Оплатить {{ cart_total }} BYN</button>
+                <a href="{% url 'cart' %}" class="btn btn-primary" title="Вернуться в корзину">← Назад в корзину</a>
+            </p>
+        </form>
+    </section>
+
+</article>
+{% endblock %}

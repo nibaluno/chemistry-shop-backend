@@ -1,40 +1,60 @@
 {% extends 'base.html' %}
 
+{% block title %}Промокоды — ХимТорг{% endblock %}
+
 {% block content %}
-    <h1>Управление промокодами</h1>
+<article id="promocodes-page">
+
+    <header>
+        <h1>Промокоды и купоны</h1>
+        <p>Используйте промокоды для получения скидок на покупки в <strong>«ХимТорг»</strong>.</p>
+    </header>
 
     {% if user.is_superuser %}
-        <p><a href="{% url 'promocode_create' %}"><strong>[+] Создать новый промокод</strong></a></p>
+    <p><a href="{% url 'promocode_create' %}" class="btn btn-success" title="Создать новый промокод">+ Создать новый промокод</a></p>
     {% endif %}
 
-    <h3>Действующие акции</h3>
-    {% for promo in active_promos %}
-        <article>
-            <p>Код: <code>{{ promo.code }}</code></p>
-            <p>Скидка: {{ promo.discount }}%</p>
-            <p>Срок до: {{ promo.expiry_date|date:"d.m.Y" }}</p>
-            
-            {% if user.is_superuser %}
-                <a href="{% url 'promocode_edit' promo.id %}">Изменить</a> | 
-                <a href="{% url 'promocode_delete' promo.id %}">Удалить</a>
-            {% endif %}
-        </article>
-        <hr>
-    {% empty %}
-        <p>Нет активных промокодов.</p>
-    {% endfor %}
+    <section aria-labelledby="active-promos-heading">
+        <h2 id="active-promos-heading">Действующие акции</h2>
 
-    <h3>Архив</h3>
-    <ul>
-        {% for promo in archive_promos %}
-            <li>
-                <s>{{ promo.code }}</s> (Скидка {{ promo.discount }}%)
+        {% for promo in active_promos %}
+        <article id="promo-{{ promo.id }}" data-promo-id="{{ promo.id }}" data-active="true">
+            <dl>
+                <dt>Код:</dt>
+                <dd><code>{{ promo.code }}</code></dd>
+                <dt>Скидка:</dt>
+                <dd><strong>{{ promo.discount }}%</strong></dd>
+                <dt>Действует до:</dt>
+                <dd><time datetime="{{ promo.expiry_date|date:'Y-m-d' }}">{{ promo.expiry_date|date:"d.m.Y" }}</time></dd>
+            </dl>
+            {% if user.is_superuser %}
+            <p>
+                <a href="{% url 'promocode_edit' promo.id %}">Изменить</a> |
+                <a href="{% url 'promocode_delete' promo.id %}">Удалить</a>
+            </p>
+            {% endif %}
+            <hr>
+        </article>
+        {% empty %}
+        <p>Нет активных промокодов.</p>
+        {% endfor %}
+    </section>
+
+    <section aria-labelledby="archive-heading">
+        <h2 id="archive-heading">Архив</h2>
+        <ul role="list">
+            {% for promo in archive_promos %}
+            <li role="listitem" data-promo-id="{{ promo.id }}" data-active="false">
+                <s><code>{{ promo.code }}</code></s> (Скидка {{ promo.discount }}%)
                 {% if user.is_superuser %}
-                    <a href="{% url 'promocode_edit' promo.id %}">[Восстановить/Править]</a>
+                — <a href="{% url 'promocode_edit' promo.id %}">Восстановить/Править</a>
                 {% endif %}
             </li>
-        {% empty %}
+            {% empty %}
             <li>Архив пуст.</li>
-        {% endfor %}
-    </ul>
+            {% endfor %}
+        </ul>
+    </section>
+
+</article>
 {% endblock %}

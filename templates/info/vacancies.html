@@ -1,12 +1,34 @@
 {% extends 'base.html' %}
 
+{% block title %}Вакансии — ХимТорг{% endblock %}
+
 {% block content %}
-    <h1>Открытые вакансии</h1>
-    {% for v in vacancies %}
-        <article>
-            <h3>{{ v.title }}</h3>
-            <p>{{ v.description }}</p>
+<article id="vacancies-page">
+
+    <header>
+        <h1>Открытые вакансии</h1>
+        <p>Присоединяйтесь к команде <strong>«ХимТорг»</strong>!</p>
+    </header>
+
+    <section aria-labelledby="vacancies-list-heading">
+        <h2 id="vacancies-list-heading" hidden>Список вакансий</h2>
+
+        {% for v in vacancies %}
+        <article itemscope itemtype="https://schema.org/JobPosting" id="vacancy-{{ v.id }}" data-vacancy-id="{{ v.id }}">
+            <header>
+                <h3 itemprop="title">{{ v.title }}</h3>
+                <p>Добавлено: <time datetime="{{ v.date_added|date:'Y-m-d' }}" itemprop="datePosted">{{ v.date_added|date:"d.m.Y" }}</time></p>
+            </header>
+            <p itemprop="description">{{ v.description }}</p>
+            <p>
+                <a href="{% url 'contacts' %}" class="btn btn-primary" title="Откликнуться на вакансию {{ v.title }}">Откликнуться</a>
+            </p>
+            <hr>
         </article>
-        <hr>
-    {% endfor %}
+        {% empty %}
+        <p>На данный момент открытых вакансий нет.</p>
+        {% endfor %}
+    </section>
+
+</article>
 {% endblock %}

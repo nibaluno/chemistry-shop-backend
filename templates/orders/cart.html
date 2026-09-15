@@ -1,7 +1,84 @@
 {% extends 'base.html' %}
 
+{% block title %}Корзина заказа — ХимТорг{% endblock %}
+
 {% block content %}
-    <h1>Ваша корзина</h1>
-    <p>Корзина находится в процессе разработки. Скоро здесь можно будет оформить заказ!</p>
-    <p><a href="{% url 'product_list' %}">Вернуться к покупкам</a></p>
+<article id="cart-page">
+
+    <header>
+        <h1>Корзина заказа</h1>
+        <p>Управляйте товарами в корзине перед оформлением заказа.</p>
+    </header>
+
+    {% if cart_items %}
+    <section aria-labelledby="cart-items-heading">
+        <h2 id="cart-items-heading" hidden>Список товаров</h2>
+
+        <table class="data-table" aria-label="Товары в корзине">
+            <thead>
+                <tr>
+                    <th id="c-name" scope="col">Товар</th>
+                    <th id="c-price" scope="col">Цена (BYN)</th>
+                    <th id="c-qty" scope="col">Количество</th>
+                    <th id="c-sub" scope="col">Сумма (BYN)</th>
+                    <th id="c-act" scope="col">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr data-product-id="{{ item.product.id }}">
+                    <th id="ci-{{ item.product.id }}-name" scope="row" headers="c-name">
+                        <a href="{% url 'product_detail' pk=item.product.pk %}">{{ item.product.name }}</a>
+                    </th>
+                    <td headers="c-price ci-{{ item.product.id }}-name">{{ item.product.price }}</td>
+                    <td headers="c-qty ci-{{ item.product.id }}-name">
+                        <span class="qty-form">
+                            <form action="{% url 'update_cart' product_id=item.product.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="decrease">
+                                <button type="submit" class="btn btn-warning" title="Уменьшить количество" aria-label="Уменьшить {{ item.product.name }}">−</button>
+                            </form>
+                            <data value="{{ item.quantity }}">{{ item.quantity }}</data>
+                            <form action="{% url 'update_cart' product_id=item.product.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="increase">
+                                <button type="submit" class="btn btn-warning" title="Увеличить количество" aria-label="Увеличить {{ item.product.name }}">+</button>
+                            </form>
+                        </span>
+                    </td>
+                    <td headers="c-sub ci-{{ item.product.id }}-name"><strong>{{ item.subtotal }}</strong></td>
+                    <td headers="c-act ci-{{ item.product.id }}-name">
+                        <form action="{% url 'remove_from_cart' product_id=item.product.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger" title="Удалить из корзины" aria-label="Удалить {{ item.product.name }}">🗑 Удалить</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th id="cart-total-label" scope="row" colspan="3" headers="c-name c-price c-qty">Итого:</th>
+                    <td headers="c-sub cart-total-label" colspan="2"><strong>{{ cart_total }} BYN</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="cart-actions">
+            <a href="{% url 'product_list' %}" class="btn btn-primary" title="Продолжить покупки">← Продолжить покупки</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'checkout' %}" class="btn btn-success" title="Перейти к оплате">💳 Оплатить</a>
+            {% else %}
+                <a href="{% url 'login' %}?next={% url 'checkout' %}" class="btn btn-success" title="Войти для оплаты">💳 Войти и оплатить</a>
+            {% endif %}
+        </div>
+    </section>
+    {% else %}
+    <section aria-labelledby="empty-cart-heading">
+        <h2 id="empty-cart-heading">Корзина пуста</h2>
+        <p>Добавьте товары из <a href="{% url 'product_list' %}" title="Перейти в каталог">каталога</a>.</p>
+    </section>
+    {% endif %}
+
+</article>
 {% endblock %}
