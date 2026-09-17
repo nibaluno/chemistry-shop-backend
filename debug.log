@@ -3263,3 +3263,7 @@ WARNING 2026-09-17 12:39:41,624 log Not Found: /media/news/7.jpg
 WARNING 2026-09-17 12:39:41,726 log Not Found: /media/news/8.jpg
 WARNING 2026-09-17 12:39:41,875 log Not Found: /media/news/9.jpg
 WARNING 2026-09-17 12:39:41,949 log Not Found: /media/news/10.jpg
+INFO 2026-09-17 13:28:10,149 autoreload Watching for file changes with StatReloader
+WARNING 2026-09-17 13:31:36,221 log Not Found: /apple-touch-icon.png
+WARNING 2026-09-17 13:31:36,224 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2026-09-17 13:31:36,227 log Not Found: /favicon.ico
