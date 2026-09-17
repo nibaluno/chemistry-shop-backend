@@ -165,3 +165,7 @@ LOGGING = {
         },
     },
 }
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://my-django-app-uo66.onrender.com",
+]
