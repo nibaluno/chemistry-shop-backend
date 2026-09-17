@@ -16,11 +16,9 @@
     <section id="company-logo" aria-labelledby="logo-heading">
         <h2 id="logo-heading" hidden>Логотип компании</h2>
         <figure>
-            {% if company.logo %}
-                <img src="{{ company.logo.url }}" alt="Логотип компании ХимТорг" class="responsive" width="300" itemprop="logo">
-            {% else %}
+   
                 <img src="{% static 'images/logo.png' %}" alt="Логотип компании ХимТорг" class="responsive" width="300" itemprop="logo">
-            {% endif %}
+
             <figcaption>Официальный логотип <abbr title="Закрытое акционерное общество">ЗАО</abbr> «ХимТорг»</figcaption>
         </figure>
     </section>
