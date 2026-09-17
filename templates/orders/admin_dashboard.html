@@ -1,126 +1,163 @@
 {% extends 'base.html' %}
 
+{% block title %}Аналитика и панель администратора — ХимТорг{% endblock %}
+
 {% block content %}
-<h1>Панель администратора</h1>
+<article id="admin-dashboard">
 
-<section>
-    <h2>Ключевые показатели</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Показатель</th>
-                <th>Значение</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td>Самый популярный товар</td><td>{{ most_popular.name }} ({{ most_popular.total_sold }} шт.)</td></tr>
-            <tr><td>Товар без спроса</td><td>{{ least_popular.name }} ({{ least_popular.total_sold }} шт.)</td></tr>
-            <tr><td>Наиболее прибыльная категория</td><td>{{ most_profitable_cat.name }}</td></tr>
-            <tr><td>Годовой оборот</td><td>{{ annual_revenue }} руб.</td></tr>
-            <tr><td>Прогноз на следующий месяц</td><td>{{ forecast }} руб.</td></tr>
-            <tr><td>Средний чек заказа</td><td>{{ mean_sales }} руб.</td></tr>
-            <tr><td>Медиана суммы заказов</td><td>{{ median_sales }} руб.</td></tr>
-            <tr><td>Мода суммы заказов</td><td>{{ mode_sales }}</td></tr>
-            <tr><td>Средний возраст клиентов</td><td>{{ mean_age }} лет</td></tr>
-            <tr><td>Медиана возраста клиентов</td><td>{{ median_age }} лет</td></tr>
-        </tbody>
-    </table>
-</section>
+    <header>
+        <h1>Панель администратора</h1>
+    </header>
 
-<section>
-    <h2>Сводная таблица: виды продукции</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Товар</th>
-                <th>Категория</th>
-                <th>Цена (руб.)</th>
-                <th>Продано (шт.)</th>
-                <th>Выручка (руб.)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for p in products_summary %}
-            <tr>
-                <td>{{ p.name }}</td>
-                <td>{{ p.category.name }}</td>
-                <td>{{ p.price }}</td>
-                <td>{{ p.total_qty }}</td>
-                <td>{{ p.total_revenue }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="3"><strong>ИТОГО</strong></td>
-                <td><strong>{{ total_all_qty }}</strong></td>
-                <td><strong>{{ total_all_revenue }}</strong></td>
-            </tr>
-        </tfoot>
-    </table>
-</section>
+    <section aria-labelledby="kpi-heading">
+        <h2 id="kpi-heading">Ключевые показатели</h2>
+        <table class="data-table" aria-describedby="kpi-heading">
+            <thead>
+                <tr>
+                    <th id="kpi-param" scope="col">Показатель</th>
+                    <th id="kpi-val" scope="col">Значение</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th id="r1" scope="row" headers="kpi-param">Самый популярный товар</th>
+                    <td headers="kpi-val r1">{{ most_popular.name }} ({{ most_popular.total_sold }} шт.)</td>
+                </tr>
+                <tr>
+                    <th id="r2" scope="row" headers="kpi-param">Товар без спроса</th>
+                    <td headers="kpi-val r2">{{ least_popular.name }} ({{ least_popular.total_sold }} шт.)</td>
+                </tr>
+                <tr>
+                    <th id="r3" scope="row" headers="kpi-param">Наиболее прибыльная категория</th>
+                    <td headers="kpi-val r3">{{ most_profitable_cat.name }}</td>
+                </tr>
+                <tr>
+                    <th id="r4" scope="row" headers="kpi-param">Годовой оборот</th>
+                    <td headers="kpi-val r4">{{ annual_revenue }} руб.</td>
+                </tr>
+                <tr>
+                    <th id="r5" scope="row" headers="kpi-param">Прогноз на следующий месяц</th>
+                    <td headers="kpi-val r5">{{ forecast }} руб.</td>
+                </tr>
+                <tr>
+                    <th id="r6" scope="row" headers="kpi-param">Средний чек заказа</th>
+                    <td headers="kpi-val r6">{{ mean_sales }} руб.</td>
+                </tr>
+                <tr>
+                    <th id="r7" scope="row" headers="kpi-param">Медиана суммы заказов</th>
+                    <td headers="kpi-val r7">{{ median_sales }} руб.</td>
+                </tr>
+                <tr>
+                    <th id="r8" scope="row" headers="kpi-param">Мода суммы заказов</th>
+                    <td headers="kpi-val r8">{{ mode_sales }}</td>
+                </tr>
+                <tr>
+                    <th id="r9" scope="row" headers="kpi-param">Средний возраст клиентов</th>
+                    <td headers="kpi-val r9">{{ mean_age }} лет</td>
+                </tr>
+                <tr>
+                    <th id="r10" scope="row" headers="kpi-param">Медиана возраста клиентов</th>
+                    <td headers="kpi-val r10">{{ median_age }} лет</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
 
-<section>
-    <h2>Ежемесячный объём продаж</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Месяц</th>
-                <th>Заказов</th>
-                <th>Выручка (руб.)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for m in monthly_sales %}
-            <tr>
-                <td>{{ m.month|date:"m/Y" }}</td>
-                <td>{{ m.orders_count }}</td>
-                <td>{{ m.total }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</section>
+    <section aria-labelledby="summary-heading">
+        <h2 id="summary-heading">Сводная таблица: виды продукции</h2>
+        <table class="data-table" aria-describedby="summary-heading">
+            <thead>
+                <tr>
+                    <th id="p-name" scope="col">Товар</th>
+                    <th id="p-cat" scope="col">Категория</th>
+                    <th id="p-price" scope="col">Цена (руб.)</th>
+                    <th id="p-qty" scope="col">Продано (шт.)</th>
+                    <th id="p-rev" scope="col">Выручка (руб.)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in products_summary %}
+                <tr>
+                    <th id="prod-{{ forloop.counter }}" scope="row" headers="p-name">{{ p.name }}</th>
+                    <td headers="p-cat prod-{{ forloop.counter }}">{{ p.category.name }}</td>
+                    <td headers="p-price prod-{{ forloop.counter }}">{{ p.price }}</td>
+                    <td headers="p-qty prod-{{ forloop.counter }}">{{ p.total_qty }}</td>
+                    <td headers="p-rev prod-{{ forloop.counter }}">{{ p.total_revenue }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th id="p-total" scope="row" colspan="3" headers="p-name p-cat p-price">ИТОГО</th>
+                    <td headers="p-qty p-total"><strong>{{ total_all_qty }}</strong></td>
+                    <td headers="p-rev p-total"><strong>{{ total_all_revenue }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </section>
 
-<section>
-    <h2>Клиенты по городам</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Город</th>
-                <th>Количество клиентов</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in clients_by_city %}
-            <tr>
-                <td>{{ item.city|default:"Не указан" }}</td>
-                <td>{{ item.count }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</section>
+    <section aria-labelledby="monthly-heading">
+        <h2 id="monthly-heading">Ежемесячный объём продаж</h2>
+        <table class="data-table" aria-describedby="monthly-heading">
+            <thead>
+                <tr>
+                    <th id="m-month" scope="col">Месяц</th>
+                    <th id="m-orders" scope="col">Заказов</th>
+                    <th id="m-rev" scope="col">Выручка (руб.)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in monthly_sales %}
+                <tr>
+                    <th id="mon-{{ forloop.counter }}" scope="row" headers="m-month">{{ m.month|date:"m/Y" }}</th>
+                    <td headers="m-orders mon-{{ forloop.counter }}">{{ m.orders_count }}</td>
+                    <td headers="m-rev mon-{{ forloop.counter }}">{{ m.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
 
-<hr>
+    <section aria-labelledby="cities-heading">
+        <h2 id="cities-heading">Клиенты по городам</h2>
+        <table class="data-table" aria-describedby="cities-heading">
+            <thead>
+                <tr>
+                    <th id="c-city" scope="col">Город</th>
+                    <th id="c-count" scope="col">Количество клиентов</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in clients_by_city %}
+                <tr>
+                    <th id="city-{{ forloop.counter }}" scope="row" headers="c-city">{{ item.city|default:"Не указан" }}</th>
+                    <td headers="c-count city-{{ forloop.counter }}">{{ item.count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
 
-<section>
-    <h2>Аналитические графики (Matplotlib)</h2>
+    <hr>
 
-    <article>
-        <h3>Продажи по месяцам и линейный тренд</h3>
-        <img src="data:image/png;base64,{{ chart_sales }}" alt="График продаж">
-    </article>
+    <section aria-labelledby="charts-heading">
+        <h2 id="charts-heading">Аналитические графики (Matplotlib)</h2>
 
-    <article>
-        <h3>Выручка по категориям товаров</h3>
-        <img src="data:image/png;base64,{{ chart_categories }}" alt="Круговая диаграмма">
-    </article>
+        <article>
+            <h3>Продажи по месяцам и линейный тренд</h3>
+            <img src="data:image/png;base64,{{ chart_sales }}" alt="График продаж">
+        </article>
 
-    <article>
-        <h3>Клиенты по городам</h3>
-        <img src="data:image/png;base64,{{ chart_cities }}" alt="Столбчатая диаграмма">
-    </article>
-</section>
+        <article>
+            <h3>Выручка по категориям товаров</h3>
+            <img src="data:image/png;base64,{{ chart_categories }}" alt="Круговая диаграмма">
+        </article>
 
+        <article>
+            <h3>Клиенты по городам</h3>
+            <img src="data:image/png;base64,{{ chart_cities }}" alt="Столбчатая диаграмма">
+        </article>
+    </section>
+
+</article>
 {% endblock %}

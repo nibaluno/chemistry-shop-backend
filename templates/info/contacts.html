@@ -26,9 +26,9 @@
 
     <section aria-labelledby="staff-heading">
         <h2 id="staff-heading">Наши сотрудники</h2>
-        <div class="contacts-grid" role="list">
+        <div class="contacts-grid">
             {% for c in contacts %}
-            <article class="contact-card" role="listitem" itemscope itemtype="https://schema.org/Person" data-contact-id="{{ c.id }}">
+            <article class="contact-card" itemscope itemtype="https://schema.org/Person" data-contact-id="{{ c.id }}">
                 <figure>
                     {% if c.photo %}
                         <img src="{{ c.photo.url }}" alt="Фото {{ c.employee.get_full_name }}" width="120" height="120" class="responsive" itemprop="image">
@@ -55,7 +55,6 @@
             {% endfor %}
         </div>
     </section>
-
 
 </article>
 {% endblock %}

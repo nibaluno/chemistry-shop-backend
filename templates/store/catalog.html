@@ -13,7 +13,7 @@
 
     <section aria-labelledby="search-heading">
         <h2 id="search-heading">Поиск и сортировка</h2>
-        <form method="get" aria-label="Форма поиска товаров" novalidate>
+        <form method="get" novalidate>
             <fieldset>
                 <legend>Фильтры</legend>
                 <p>
@@ -43,16 +43,16 @@
 
     <section aria-labelledby="products-heading">
         <h2 id="products-heading">Товары</h2>
-        <div class="catalog-grid" role="list">
+        <div class="catalog-grid">
             {% for product in products %}
-            <article class="product-card" role="listitem" itemscope itemtype="https://schema.org/Product" data-product-id="{{ product.id }}">
+            <article class="product-card" itemscope itemtype="https://schema.org/Product" data-product-id="{{ product.id }}">
+                <h3 itemprop="name">{{ product.name }}</h3>
                 <figure>
                     {% if product.photo %}
                         <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="responsive" width="200" height="150" loading="lazy" itemprop="image">
                     {% else %}
                         <img src="{% static 'images/product.png' %}" alt="{{ product.name }}" class="responsive" width="200" height="150" loading="lazy">
                     {% endif %}
-                    <figcaption itemprop="name">{{ product.name }}</figcaption>
                 </figure>
                 <p>Категория: {{ product.category.name }}</p>
                 <p>Цена: <strong>{{ product.price }} руб.</strong></p>

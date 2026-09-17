@@ -15,7 +15,7 @@
             <dt>Статус:</dt>
             <dd itemprop="orderStatus">{{ order.get_status_display }}</dd>
             <dt>Дата оформления:</dt>
-            <dd><time datetime="{{ order.created_at|date:'c' }}" itemprop="orderDate">{{ order.created_at|date:"d.m.Y H:i" }}</time></dd>
+            <dd><time datetime="{{ order.created_at|date:'Y-m-d\TH:i:s' }}" itemprop="orderDate">{{ order.created_at|date:"d.m.Y H:i" }}</time></dd>
             <dt>Планируемая доставка:</dt>
             <dd><time datetime="{{ order.delivery_date|date:'Y-m-d' }}">{{ order.delivery_date|date:"d.m.Y" }}</time></dd>
             {% if order.promo_code %}
@@ -27,7 +27,7 @@
 
     <section aria-labelledby="order-items-heading">
         <h2 id="order-items-heading">Товары в заказе</h2>
-        <table class="data-table" aria-label="Товары в заказе">
+        <table class="data-table" aria-describedby="order-items-heading">
             <thead>
                 <tr>
                     <th id="o-name" scope="col">Товар</th>

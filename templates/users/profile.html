@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 
+{% block title %}Личный кабинет — ХимТорг{% endblock %}
+
 {% block content %}
-    <h2>Личный кабинет: {{ user.username }}</h2>
+<article>
+    <header>
+        <h1>Личный кабинет: {{ user.username }}</h1>
+    </header>
+
     <ul>
         <li><strong>ФИО:</strong> {{ user.first_name }} {{ user.last_name }}</li>
         <li><strong>Роль:</strong> {{ user.get_role_display }}</li>
@@ -17,16 +23,18 @@
 
     <hr>
     
-    <h3>Развлекательный блок</h3>
-    <section>
+    <section aria-labelledby="fun-heading">
+        <h2 id="fun-heading">Развлекательный блок</h2>
+        
         <article>
-            <h4>Случайный факт о котах</h4>
+            <h3>Случайный факт о котах</h3>
             <p><i>{{ cat_fact }}</i></p>
         </article>
 
         <article>
-            <h4>Шутка дня (Joke API)</h4>
+            <h3>Шутка дня (Joke API)</h3>
             <p><i>{{ random_joke }}</i></p>
         </article>
     </section>
+</article>
 {% endblock %}

@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 
+{% block title %}Детали клиента: {{ client_user.username }} — ХимТорг{% endblock %}
+
 {% block content %}
-    <h2>Детали клиента: {{ client_user.username }}</h2>
+<article>
+    <header>
+        <h1>Детали клиента: {{ client_user.username }}</h1>
+    </header>
+
     <ul>
         <li><strong>ФИО:</strong> {{ client_user.first_name }} {{ client_user.last_name }}</li>
         <li><strong>Email:</strong> {{ client_user.email }}</li>
@@ -11,4 +17,5 @@
     </ul>
     
     <p><a href="{% url 'client_list' %}">← Вернуться к списку</a></p>
+</article>
 {% endblock %}

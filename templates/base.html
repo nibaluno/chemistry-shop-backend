@@ -44,14 +44,14 @@
 
     <a href="#main-content" class="skip-link" tabindex="1" title="Перейти к основному содержимому">Перейти к содержимому</a>
 
-    <header class="site-header" role="banner" id="site-header" itemscope itemtype="https://schema.org/WPHeader">
+    <header class="site-header" id="site-header" itemscope itemtype="https://schema.org/WPHeader">
         <div class="header-top">
             <a href="{% url 'home' %}" class="logo-link" title="На главную — ХимТорг" itemprop="url">
                 <img src="{% static 'images/logo.svg' %}" alt="Логотип магазина ХимТорг" width="200" height="60" itemprop="logo">
                 <span itemprop="name" hidden>ХимТорг</span>
             </a>
 
-            <nav class="nav-horizontal" role="navigation" aria-label="Основная навигация" id="main-nav">
+            <nav class="nav-horizontal" aria-label="Основная навигация" id="main-nav">
                 <ul role="menubar">
                     <li role="none"><a href="{% url 'home' %}" role="menuitem" {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>Главная</a></li>
                     <li role="none"><a href="{% url 'about' %}" role="menuitem" {% if request.resolver_match.url_name == 'about' %}aria-current="page"{% endif %}>О компании</a></li>
@@ -85,7 +85,7 @@
     </header>
 
     {% if messages %}
-    <aside role="status" aria-live="polite" id="flash-messages" class="flash-messages" style="max-width:1200px;margin:0.5rem auto;padding:0 1rem;">
+    <aside aria-live="polite" id="flash-messages" class="flash-messages" style="max-width:1200px;margin:0.5rem auto;padding:0 1rem;">
         {% for message in messages %}
             <p data-message-level="{{ message.tags }}" style="padding:0.5rem 1rem;border-radius:4px;background:#e3f2fd;">{{ message }}</p>
         {% endfor %}
@@ -93,7 +93,7 @@
     {% endif %}
 
     <div class="layout-wrapper">
-        <nav class="nav-vertical" role="navigation" aria-label="Дополнительная навигация" id="side-nav">
+        <nav class="nav-vertical" aria-label="Дополнительная навигация" id="side-nav">
             <h2 id="side-nav-heading">Разделы</h2>
             <ul aria-labelledby="side-nav-heading">
                 <li><a href="{% url 'home' %}#catalog" title="Каталог на главной">Каталог</a></li>
@@ -107,12 +107,12 @@
             </ul>
         </nav>
 
-        <main role="main" id="main-content" tabindex="-1" itemprop="mainContentOfPage">
+        <main id="main-content" tabindex="-1" itemprop="mainContentOfPage">
             {% block content %}{% endblock %}
         </main>
     </div>
 
-    <footer class="site-footer" role="contentinfo" id="site-footer" itemscope itemtype="https://schema.org/WPFooter">
+    <footer class="site-footer" id="site-footer" itemscope itemtype="https://schema.org/WPFooter">
         <p>&copy; <time datetime="2026">2026</time> <span itemprop="copyrightHolder">ЗАО «ХимТорг»</span>. Все права защищены.</p>
         <p>
             <a href="{% url 'privacy' %}" title="Политика конфиденциальности">Политика конфиденциальности</a> |

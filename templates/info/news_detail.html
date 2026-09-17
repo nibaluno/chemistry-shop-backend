@@ -14,7 +14,7 @@
         <h1 itemprop="headline">{{ news_item.title }}</h1>
         <p>
             Опубликовано:
-            <time datetime="{{ news_item.date_published|date:'c' }}" itemprop="datePublished">
+            <time datetime="{{ news_item.date_published|date:'Y-m-d\TH:i:s' }}" itemprop="datePublished">
                 {{ news_item.date_published|date:"d F Y, H:i" }}
             </time>
         </p>

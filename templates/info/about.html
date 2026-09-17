@@ -48,7 +48,8 @@
         </figure>
         {% else %}
         <figure>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/FeJQg512J7s?si=5ptwVL1jU_dX0cWU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <!-- Замените ссылку ниже на корректную при необходимости -->
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/example" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             <figcaption>Видеопрезентация компании (встроенный плеер)</figcaption>
         </figure>
         {% endif %}
@@ -78,11 +79,10 @@
         </ol>
     </section>
 
-<!-- Реквизиты — таблица с headers -->
+    <!-- Реквизиты -->
     <section id="requisites" aria-labelledby="req-heading">
         <h2 id="req-heading">Реквизиты</h2>
-        <!-- Добавили border="1" cellPadding="8" для простой видимости сетки и отступов -->
-        <table border="1" cellpadding="8" cellspacing="0" class="data-table" aria-describedby="req-desc" style="border-collapse: collapse; width: 100%; max-width: 600px;">
+        <table class="data-table" aria-describedby="req-desc" style="border-collapse: collapse; width: 100%; max-width: 600px;">
             <caption id="req-desc" style="caption-side: top; font-weight: bold; margin-bottom: 5px;">Юридические реквизиты ЗАО «ХимТорг»</caption>
             <thead>
                 <tr>
@@ -115,9 +115,9 @@
     <section id="certificate" aria-labelledby="cert-heading">
         <h2 id="cert-heading">Сертификат качества</h2>
         {% if company.certificate_text %}
-        <pre aria-label="Текст сертификата качества">{{ company.certificate_text }}</pre>
+        <pre role="region" aria-label="Текст сертификата качества">{{ company.certificate_text }}</pre>
         {% else %}
-        <pre aria-label="Текст сертификата качества">
+        <pre role="region" aria-label="Текст сертификата качества">
 ╔══════════════════════════════════════════════════╗
 ║           СЕРТИФИКАТ КАЧЕСТВА № 001              ║
 ║                                                  ║

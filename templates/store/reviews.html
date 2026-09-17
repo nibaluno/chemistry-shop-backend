@@ -1,16 +1,20 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Все отзывы магазина</h1>
+<article>
+    <header>
+        <h1>Все отзывы магазина</h1>
+    </header>
 
-{% for review in reviews %}
-    <article>
-        <h4>Товар: <a href="{% url 'product_detail' pk=review.product.pk %}">{{ review.product.name }}</a></h4>
-        <p>"{{ review.text }}"</p>
-        <p>Автор: {{ review.user.username }} | Оценка: {{ review.rating }}</p>
-        <hr>
-    </article>
-{% empty %}
-    <p>Отзывов еще нет.</p>
-{% endfor %}
+    {% for review in reviews %}
+        <article itemscope itemtype="https://schema.org/Review">
+            <h2>Товар: <a href="{% url 'product_detail' pk=review.product.pk %}" itemprop="itemReviewed">{{ review.product.name }}</a></h2>
+            <p itemprop="reviewBody">"{{ review.text }}"</p>
+            <p>Автор: <span itemprop="author">{{ review.user.username }}</span> | Оценка: <span itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating"><span itemprop="ratingValue">{{ review.rating }}</span>/5</span></p>
+            <hr>
+        </article>
+    {% empty %}
+        <p>Отзывов еще нет.</p>
+    {% endfor %}
+</article>
 {% endblock %}

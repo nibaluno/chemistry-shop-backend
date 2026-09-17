@@ -19,6 +19,7 @@
 
         {% for promo in active_promos %}
         <article id="promo-{{ promo.id }}" data-promo-id="{{ promo.id }}" data-active="true">
+            <h3 hidden>Промокод {{ promo.code }}</h3>
             <dl>
                 <dt>Код:</dt>
                 <dd><code>{{ promo.code }}</code></dd>
@@ -42,9 +43,9 @@
 
     <section aria-labelledby="archive-heading">
         <h2 id="archive-heading">Архив</h2>
-        <ul role="list">
+        <ul>
             {% for promo in archive_promos %}
-            <li role="listitem" data-promo-id="{{ promo.id }}" data-active="false">
+            <li data-promo-id="{{ promo.id }}" data-active="false">
                 <s><code>{{ promo.code }}</code></s> (Скидка {{ promo.discount }}%)
                 {% if user.is_superuser %}
                 — <a href="{% url 'promocode_edit' promo.id %}">Восстановить/Править</a>

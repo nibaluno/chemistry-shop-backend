@@ -14,7 +14,7 @@
     <section aria-labelledby="cart-items-heading">
         <h2 id="cart-items-heading" hidden>Список товаров</h2>
 
-        <table class="data-table" aria-label="Товары в корзине">
+        <table class="data-table" aria-describedby="cart-items-heading">
             <thead>
                 <tr>
                     <th id="c-name" scope="col">Товар</th>
@@ -32,19 +32,19 @@
                     </th>
                     <td headers="c-price ci-{{ item.product.id }}-name">{{ item.product.price }}</td>
                     <td headers="c-qty ci-{{ item.product.id }}-name">
-                        <span class="qty-form">
-                            <form action="{% url 'update_cart' product_id=item.product.id %}" method="post" style="display:inline;">
+                        <div class="qty-form" style="display: flex; align-items: center; gap: 0.5rem;">
+                            <form action="{% url 'update_cart' product_id=item.product.id %}" method="post" style="display:inline; margin:0;">
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="decrease">
                                 <button type="submit" class="btn btn-warning" title="Уменьшить количество" aria-label="Уменьшить {{ item.product.name }}">−</button>
                             </form>
                             <data value="{{ item.quantity }}">{{ item.quantity }}</data>
-                            <form action="{% url 'update_cart' product_id=item.product.id %}" method="post" style="display:inline;">
+                            <form action="{% url 'update_cart' product_id=item.product.id %}" method="post" style="display:inline; margin:0;">
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="increase">
                                 <button type="submit" class="btn btn-warning" title="Увеличить количество" aria-label="Увеличить {{ item.product.name }}">+</button>
                             </form>
-                        </span>
+                        </div>
                     </td>
                     <td headers="c-sub ci-{{ item.product.id }}-name"><strong>{{ item.subtotal }}</strong></td>
                     <td headers="c-act ci-{{ item.product.id }}-name">

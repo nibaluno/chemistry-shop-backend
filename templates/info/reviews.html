@@ -5,7 +5,6 @@
 {% block content %}
 <article id="reviews-page">
 
-
     <header>
         <h1>Отзывы о магазине</h1>
         <p>Мнения наших покупателей о товарах и сервисе <strong>«ХимТорг»</strong>.</p>
@@ -29,19 +28,18 @@
         {% endif %}
     </section>
 
-
     {% if user.is_authenticated %}
     <section id="review-form" aria-labelledby="review-form-heading">
         <h2 id="review-form-heading">Форма отзыва</h2>
         <details {% if open_form %}open{% endif %}>
             <summary>Заполните форму и нажмите «Отправить»</summary>
-            <form method="post" action="{% url 'reviews_info' %}#review-form" novalidate aria-label="Форма добавления отзыва">
+            <form method="post" action="{% url 'reviews_info' %}#review-form" novalidate>
                 {% csrf_token %}
                 <fieldset>
                     <legend>Новый отзыв</legend>
                     <p>
                         <label for="review-product">Товар <abbr title="обязательное поле">*</abbr>:</label>
-                        <select name="product" id="review-product" required aria-required="true">
+                        <select name="product" id="review-product" required>
                             <option value="">— Выберите товар —</option>
                             {% for product in products %}
                             <option value="{{ product.id }}">{{ product.name }}</option>
@@ -50,7 +48,8 @@
                     </p>
                     <p>
                         <label for="review-rating">Оценка <abbr title="обязательное поле">*</abbr>:</label>
-                        <select name="rating" id="review-rating" required aria-required="true">
+                        <select name="rating" id="review-rating" required>
+                            <option value="">— Выберите оценку —</option>
                             <option value="5">★★★★★ (5)</option>
                             <option value="4">★★★★☆ (4)</option>
                             <option value="3">★★★☆☆ (3)</option>
@@ -61,7 +60,7 @@
                     <p>
                         <label for="review-text">Текст отзыва <abbr title="обязательное поле">*</abbr>:</label>
                         <textarea name="text" id="review-text" rows="4" required minlength="10" maxlength="1000"
-                                  aria-required="true" placeholder="Напишите ваш отзыв (мин. 10 символов)"></textarea>
+                                  placeholder="Напишите ваш отзыв (мин. 10 символов)"></textarea>
                     </p>
                     <button type="submit" class="btn btn-primary" title="Сохранить отзыв в базе данных">Отправить</button>
                 </fieldset>
@@ -75,6 +74,7 @@
 
         {% for r in reviews %}
         <article itemscope itemtype="https://schema.org/Review" data-review-id="{{ r.id }}">
+            <h3 hidden>Отзыв от {{ r.user.username }}</h3>
             <header>
                 <p>
                     <strong itemprop="author">{{ r.user.username }}</strong> —
@@ -88,7 +88,7 @@
                 <p>{{ r.text }}</p>
             </blockquote>
             <footer>
-                <time datetime="{{ r.date_added|date:'c' }}" itemprop="datePublished">{{ r.date_added|date:"d.m.Y H:i" }}</time>
+                <time datetime="{{ r.date_added|date:'Y-m-d\TH:i:s' }}" itemprop="datePublished">{{ r.date_added|date:"d.m.Y H:i" }}</time>
             </footer>
             <hr>
         </article>

@@ -44,11 +44,11 @@
                     <link itemprop="availability" href="https://schema.org/InStock">
                 </dd>
                 <dt>Дата добавления:</dt>
-                <dd><time datetime="{{ product.date_added|date:'c' }}">{{ product.date_added|date:"d.m.Y" }}</time></dd>
+                <dd><time datetime="{{ product.date_added|date:'Y-m-d' }}">{{ product.date_added|date:"d.m.Y" }}</time></dd>
             </dl>
 
             <!-- Добавить в корзину -->
-            <form action="{% url 'add_to_cart' product_id=product.pk %}" method="post" aria-label="Добавить товар в корзину">
+            <form action="{% url 'add_to_cart' product_id=product.pk %}" method="post">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-success" title="Добавить {{ product.name }} в корзину" data-action="add-to-cart">
                     🛒 Добавить в корзину
@@ -64,7 +64,7 @@
         <h2 id="reviews-heading">Отзывы (<data value="{{ product.reviews.count }}">{{ product.reviews.count }}</data>)</h2>
 
         {% if user.is_authenticated %}
-        <form action="{% url 'add_review' product.id %}" method="post" aria-label="Форма отзыва" novalidate>
+        <form action="{% url 'add_review' product.id %}" method="post" novalidate>
             {% csrf_token %}
             <fieldset>
                 <legend>Оставить отзыв</legend>
@@ -99,7 +99,7 @@
                 </p>
             </header>
             <p itemprop="reviewBody">{{ review.text }}</p>
-            <footer><time datetime="{{ review.date_added|date:'c' }}" itemprop="datePublished">{{ review.date_added|date:"d.m.Y H:i" }}</time></footer>
+            <footer><time datetime="{{ review.date_added|date:'Y-m-d\TH:i:s' }}" itemprop="datePublished">{{ review.date_added|date:"d.m.Y H:i" }}</time></footer>
         </article>
         <hr>
         {% empty %}

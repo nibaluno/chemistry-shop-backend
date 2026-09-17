@@ -20,11 +20,11 @@
                 <legend>Новый термин</legend>
                 <p>
                     <label for="term">Термин / Вопрос:</label>
-                    <input type="text" name="term" id="term" required minlength="2" maxlength="100" aria-required="true">
+                    <input type="text" name="term" id="term" required minlength="2" maxlength="100">
                 </p>
                 <p>
                     <label for="definition">Определение / Ответ:</label>
-                    <textarea name="definition" id="definition" rows="3" required minlength="10" aria-required="true"></textarea>
+                    <textarea name="definition" id="definition" rows="3" required minlength="10"></textarea>
                 </p>
                 <button type="submit" class="btn btn-primary">Добавить</button>
             </fieldset>
@@ -41,7 +41,7 @@
         <details class="faq-item" id="term-{{ t.id }}" data-term-id="{{ t.id }}">
             <summary>
                 <strong>{{ t.term }}</strong>
-                — добавлено <time datetime="{{ t.date_added|date:'c' }}">{{ t.date_added|date:"d.m.Y" }}</time>
+                — добавлено <time datetime="{{ t.date_added|date:'Y-m-d' }}">{{ t.date_added|date:"d.m.Y" }}</time>
             </summary>
             <div class="faq-answer">
                 <p>{{ t.definition }}</p>

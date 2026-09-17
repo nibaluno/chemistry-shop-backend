@@ -12,7 +12,7 @@
         <p itemprop="description">Ваш надёжный поставщик <dfn title="Химические средства для бытовых нужд">бытовой химии</dfn> с <time datetime="2010">2010</time> года.</p>
     </header>
 
-    <!-- Логотип компании (из БД или статический) -->
+    <!-- Логотип компании -->
     <section id="company-logo" aria-labelledby="logo-heading" itemscope itemtype="https://schema.org/Organization">
         <h2 id="logo-heading">Логотип компании</h2>
         <figure>
@@ -25,7 +25,7 @@
         </figure>
     </section>
 
-<!-- Рекламные баннеры (адаптивные изображения через picture) -->
+    <!-- Рекламные баннеры -->
     <section id="banners" aria-labelledby="banners-heading">
         <h2 id="banners-heading">Акции и спецпредложения</h2>
         <div class="banner-carousel" role="region" aria-label="Рекламные баннеры">
@@ -48,7 +48,7 @@
                     <source media="(max-width: 768px)" srcset="{% static 'images/banner3.png' %}">
                     <img src="{% static 'images/banner3.png' %}" alt="Бесплатная доставка от 50 BYN" class="responsive" width="800" height="280" loading="lazy">
                 </picture>
-                <figcaption>Бесплатная доставка при заказе от 50 BYN — нажмите <kbd>Ctrl</kbd>+<kbd>K</kbd> для поиска<wbr>товаров</figcaption>
+                <figcaption>Бесплатная доставка при заказе от 50 BYN — нажмите <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>K</kbd> для поиска<wbr>товаров</figcaption>
             </figure>
         </div>
     </section>
@@ -58,16 +58,16 @@
         <h2 id="catalog-heading">Каталог товаров</h2>
         <p>Ознакомьтесь с нашим <a href="{% url 'product_list' %}" title="Полный каталог товаров">полным каталогом</a> или выберите из популярных позиций:</p>
 
-        <div class="catalog-grid" role="list">
+        <div class="catalog-grid">
             {% for product in products %}
-            <article class="product-card" role="listitem" itemscope itemtype="https://schema.org/Product" data-product-id="{{ product.id }}">
+            <article class="product-card" itemscope itemtype="https://schema.org/Product" data-product-id="{{ product.id }}">
+                <h3 itemprop="name">{{ product.name }}</h3>
                 <figure>
                     {% if product.photo %}
                         <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="responsive" width="200" height="150" loading="lazy" itemprop="image">
                     {% else %}
                         <img src="{% static 'images/product.png' %}" alt="{{ product.name }}" class="responsive" width="200" height="150" loading="lazy">
                     {% endif %}
-                    <figcaption itemprop="name">{{ product.name }}</figcaption>
                 </figure>
                 <p>Категория: <em>{{ product.category.name }}</em></p>
                 <p>Цена: <strong itemprop="offers" itemscope itemtype="https://schema.org/Offer">
@@ -88,7 +88,8 @@
         {% if latest_news %}
         <article itemscope itemtype="https://schema.org/NewsArticle">
             <h3 itemprop="headline">{{ latest_news.title }}</h3>
-            <p><time datetime="{{ latest_news.date_published|date:'c' }}" itemprop="datePublished">{{ latest_news.date_published|date:"d.m.Y H:i" }}</time></p>
+            <!-- Безопасный формат даты без долей секунд -->
+            <p><time datetime="{{ latest_news.date_published|date:'Y-m-d\TH:i:s' }}" itemprop="datePublished">{{ latest_news.date_published|date:"d.m.Y H:i" }}</time></p>
             <p itemprop="description">{{ latest_news.short_content }}</p>
             <p><a href="{% url 'news_detail' year=latest_news.date_published|date:'Y' slug=latest_news.slug %}" title="Читать полную статью" itemprop="url">Читать далее →</a></p>
         </article>
@@ -100,9 +101,9 @@
     <!-- Партнёры -->
     <section id="partners" aria-labelledby="partners-heading">
         <h2 id="partners-heading">Наши партнёры</h2>
-        <ul class="partners-list" role="list">
+        <ul class="partners-list">
             {% for partner in partners %}
-            <li role="listitem" data-partner-id="{{ partner.id }}">
+            <li data-partner-id="{{ partner.id }}">
                 <a href="{{ partner.website_url }}" target="_blank" rel="noopener noreferrer" title="Сайт {{ partner.name }}">
                     {% if partner.logo %}
                         <img src="{{ partner.logo.url }}" alt="Логотип {{ partner.name }}" width="120" height="60" loading="lazy">
@@ -127,8 +128,8 @@
             <footer>— <cite>Директор «ХимТорг»</cite></footer>
         </blockquote>
 
-        <h3>Наш девиз (фиксированный перевод строк — <code>&lt;pre&gt;</code>):</h3>
-        <pre class="poem-fixed" aria-label="Четверостишие с фиксированным переводом строк">Белизна — чистота,
+        <h3>Наш девиз (фиксированный перевод строк):</h3>
+        <pre class="poem-fixed" role="region" aria-label="Четверостишие с фиксированным переводом строк">Белизна — чистота,
 Свежесть в каждом доме,
 Химия для уборки —
 Магазин «ХимТорг» — наше!</pre>
@@ -142,7 +143,7 @@
         </p>
     </section>
 
-    <!-- Таблица с headers и объединёнными ячейками -->
+    <!-- Таблица -->
     <section id="price-table" aria-labelledby="table-heading">
         <h2 id="table-heading">Сравнение популярных категорий</h2>
         <table class="data-table" aria-describedby="table-desc">
@@ -209,15 +210,15 @@ final = calculate_discount(100, 15)  # 85.0</code></pre>
             <dt>Часовой пояс:</dt>
             <dd><abbr title="{{ tz_name }}">{{ tz_name }}</abbr></dd>
             <dt>Локальное время:</dt>
-            <dd><time datetime="{{ now_local|date:'c' }}">{{ now_local|time:"H:i" }}</time></dd>
+            <dd><time datetime="{{ now_local|date:'Y-m-d\TH:i:s' }}">{{ now_local|time:"H:i" }}</time></dd>
             <dt>Время UTC:</dt>
-            <dd><time datetime="{{ now_utc|date:'c' }}">{{ now_utc|time:"H:i" }}</time></dd>
+            <dd><time datetime="{{ now_utc|date:'Y-m-d\TH:i:s' }}">{{ now_utc|time:"H:i" }}</time></dd>
         </dl>
         <h3>Календарь ({{ now_local|date:"F Y" }})</h3>
-        <pre aria-label="Календарь текущего месяца">{{ month_cal }}</pre>
+        <pre role="region" aria-label="Календарь текущего месяца">{{ month_cal }}</pre>
     </aside>
 
-    <!-- Семантическое выделение и элементы управления -->
+    <!-- Семантическое выделение -->
     <section id="semantic-demo" aria-labelledby="semantic-heading">
         <h2 id="semantic-heading">Справка по использованию сайта</h2>
         <p>Для поиска в каталоге введите запрос и нажмите <kbd>Enter</kbd>. Пример вывода системы: <samp>Найдено: 10 товаров</samp>.</p>
@@ -230,7 +231,7 @@ final = calculate_discount(100, 15)  # 85.0</code></pre>
 
     <!-- Якорные ссылки -->
     <nav aria-label="Быстрые ссылки по странице" id="page-anchors">
-        <h2>Быстрая навигация по странице</h2>
+        <h2>Каталог быстрых ссылок</h2>
         <ul>
             <li><a href="#banners">↑ К баннерам</a></li>
             <li><a href="#catalog">↑ К каталогу</a></li>

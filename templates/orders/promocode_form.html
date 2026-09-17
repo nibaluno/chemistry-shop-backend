@@ -1,24 +1,27 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>{% if promo %}Редактирование{% else %}Создание{% endif %} промокода</h1>
+<article>
+    <header>
+        <h1>{% if promo %}Редактирование{% else %}Создание{% endif %} промокода</h1>
+    </header>
 
-    <form method="POST">
+    <form method="post">
         {% csrf_token %}
         
         <p>
-            <label>Код промокода:</label><br>
-            <input type="text" name="code" value="{{ promo.code }}" placeholder="Например: СКИДКА2024" required>
+            <label for="id-code">Код промокода:</label><br>
+            <input type="text" id="id-code" name="code" value="{{ promo.code }}" placeholder="Например: СКИДКА2024" required>
         </p>
 
         <p>
-            <label>Размер скидки (%):</label><br>
-            <input type="number" name="discount" value="{{ promo.discount }}" min="1" max="100" required>
+            <label for="id-discount">Размер скидки (%):</label><br>
+            <input type="number" id="id-discount" name="discount" value="{{ promo.discount }}" min="1" max="100" required>
         </p>
 
         <p>
-            <label>Срок действия до:</label><br>
-            <input type="date" name="expiry_date" value="{{ promo.expiry_date|date:'Y-m-d' }}" required>
+            <label for="id-expiry">Срок действия до:</label><br>
+            <input type="date" id="id-expiry" name="expiry_date" value="{{ promo.expiry_date|date:'Y-m-d' }}" required>
         </p>
 
         {% if promo %}
@@ -34,4 +37,5 @@
     </form>
 
     <p><a href="{% url 'promocodes' %}">Отмена и возврат к списку</a></p>
+</article>
 {% endblock %}

@@ -3233,3 +3233,25 @@ INFO 2026-09-08 20:07:02,939 autoreload /Users/kategorbenko/СТЗweb-пр/LR55/
 INFO 2026-09-08 20:07:03,257 autoreload Watching for file changes with StatReloader
 INFO 2026-09-14 06:22:06,157 autoreload Watching for file changes with StatReloader
 INFO 2026-09-15 11:04:07,897 autoreload Watching for file changes with StatReloader
+INFO 2026-09-15 11:21:03,012 autoreload Watching for file changes with StatReloader
+INFO 2026-09-16 11:37:20,280 autoreload Watching for file changes with StatReloader
+WARNING 2026-09-16 11:37:32,376 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2026-09-16 11:37:32,486 log Not Found: /apple-touch-icon.png
+WARNING 2026-09-16 11:37:32,562 log Not Found: /favicon.ico
+INFO 2026-09-16 11:52:12,779 autoreload Watching for file changes with StatReloader
+WARNING 2026-09-16 12:53:30,555 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2026-09-16 12:53:30,559 log Not Found: /apple-touch-icon.png
+WARNING 2026-09-16 12:53:30,561 log Not Found: /favicon.ico
+INFO 2026-09-16 13:00:44,760 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-09-16 13:00:44,761 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-09-16 13:00:44,762 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-09-16 13:00:44,762 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+WARNING 2026-09-16 13:00:57,434 log Not Found: /favicon.ico
+INFO 2026-09-16 13:08:34,943 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-09-16 13:08:34,944 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-09-16 13:08:34,945 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-09-16 13:08:34,945 category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+INFO 2026-09-16 22:37:52,023 autoreload Watching for file changes with StatReloader
+WARNING 2026-09-16 22:38:00,316 log Not Found: /apple-touch-icon-precomposed.png
+WARNING 2026-09-16 22:38:00,319 log Not Found: /apple-touch-icon.png
+WARNING 2026-09-16 22:38:00,321 log Not Found: /favicon.ico

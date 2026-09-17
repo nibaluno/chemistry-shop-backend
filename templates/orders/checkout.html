@@ -12,7 +12,7 @@
 
     <section aria-labelledby="order-summary-heading">
         <h2 id="order-summary-heading">Сводка заказа</h2>
-        <table class="data-table" aria-label="Сводка заказа">
+        <table class="data-table" aria-describedby="order-summary-heading">
             <thead>
                 <tr>
                     <th id="s-name" scope="col">Товар</th>
@@ -43,7 +43,7 @@
     <section aria-labelledby="payment-form-heading">
         <h2 id="payment-form-heading">Форма оплаты</h2>
 
-        <form method="post" action="{% url 'checkout' %}" novalidate aria-label="Форма оформления заказа">
+        <form method="post" action="{% url 'checkout' %}" novalidate>
             {% csrf_token %}
 
             <fieldset>
@@ -140,7 +140,7 @@
                 </p>
 
                 <p>
-                    <label>Предпочитаемое время доставки:</label>
+                    <label>Предпочитаемое время доставки:</label><br>
                     <input type="radio" name="delivery_time" id="time-morning" value="morning" checked>
                     <label for="time-morning">Утро (9:00–12:00)</label>
                     <input type="radio" name="delivery_time" id="time-afternoon" value="afternoon">

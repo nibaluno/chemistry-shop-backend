@@ -19,7 +19,7 @@
             <header>
                 <h3 itemprop="headline">{{ news.title }}</h3>
                 <p>
-                    <time datetime="{{ news.date_published|date:'c' }}" itemprop="datePublished">
+                    <time datetime="{{ news.date_published|date:'Y-m-d\TH:i:s' }}" itemprop="datePublished">
                         {{ news.date_published|date:"d.m.Y H:i" }}
                     </time>
                 </p>
