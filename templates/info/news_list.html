@@ -29,7 +29,7 @@
                 {% if news.image %}
                     <img src="{{ news.image.url }}" alt="{{ news.title }}" class="responsive" width="400" height="250" loading="lazy" itemprop="image">
                 {% else %}
-                    <img src="{% static 'images/banner1.svg' %}" alt="{{ news.title }}" class="responsive" width="400" height="250" loading="lazy">
+                    <img src="{% static 'images/banner.jpg' %}" alt="{{ news.title }}" class="responsive" width="400" height="250" loading="lazy">
                 {% endif %}
                 <figcaption>{{ news.short_content }}</figcaption>
             </figure>

@@ -3267,3 +3267,18 @@ INFO 2026-09-17 13:28:10,149 autoreload Watching for file changes with StatReloa
 WARNING 2026-09-17 13:31:36,221 log Not Found: /apple-touch-icon.png
 WARNING 2026-09-17 13:31:36,224 log Not Found: /apple-touch-icon-precomposed.png
 WARNING 2026-09-17 13:31:36,227 log Not Found: /favicon.ico
+INFO 2026-09-17 13:49:49,865 autoreload Watching for file changes with StatReloader
+INFO 2026-09-17 13:59:57,076 autoreload /Users/kategorbenko/СТЗweb-пр/LR55/config/settings.py changed, reloading.
+INFO 2026-09-17 14:00:16,563 autoreload Watching for file changes with StatReloader
+INFO 2026-09-17 14:00:23,998 autoreload /Users/kategorbenko/СТЗweb-пр/LR55/config/settings.py changed, reloading.
+INFO 2026-09-17 14:00:24,247 autoreload Watching for file changes with StatReloader
+INFO 2026-09-17 14:00:25,494 autoreload /Users/kategorbenko/СТЗweb-пр/LR55/config/settings.py changed, reloading.
+INFO 2026-09-17 14:00:25,701 autoreload Watching for file changes with StatReloader
+WARNING 2026-09-17 14:02:15,981 log Not Found: /media/news/4.jpg
+WARNING 2026-09-17 14:02:16,043 log Not Found: /media/news/5.jpg
+WARNING 2026-09-17 14:02:16,413 log Not Found: /media/news/6.jpg
+WARNING 2026-09-17 14:02:16,512 log Not Found: /media/news/7.jpg
+WARNING 2026-09-17 14:02:16,608 log Not Found: /media/news/8.jpg
+WARNING 2026-09-17 14:02:16,770 log Not Found: /media/news/9.jpg
+WARNING 2026-09-17 14:02:16,825 log Not Found: /media/news/10.jpg
+WARNING 2026-09-17 14:02:19,650 log Not Found: /media/news/7.jpg

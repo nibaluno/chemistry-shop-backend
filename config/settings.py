@@ -40,12 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',  
-    'cloudinary_storage',
+
     'store',
     'users',
     'orders',
     'info',
-    'cloudinary',
+
 
 ]
 
@@ -172,14 +172,3 @@ LOGGING = {
 CSRF_TRUSTED_ORIGINS = [
     "https://my-django-app-uo66.onrender.com",
 ]
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
-
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
-}
-
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
